@@ -60,6 +60,12 @@ export default function Navbar() {
             )
           )}
           <Link
+            to="/status"
+            className="text-gray-400 hover:text-white transition-colors duration-300 text-sm font-medium tracking-wide"
+          >
+            Mi Registro
+          </Link>
+          <Link
             to="/formulario"
             className="px-5 py-2.5 bg-[#0066CC] hover:bg-[#0052a3] text-white text-sm font-semibold rounded-full transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,102,204,0.45)] hover:scale-105"
           >
@@ -103,6 +109,7 @@ export default function Navbar() {
               <Link to="/" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Inicio</Link>
               <a href="/#evento" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>El Evento</a>
               <a href="/#categorias" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Categorías</a>
+              <Link to="/status" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Mi Registro</Link>
               <Link
                 to="/formulario"
                 onClick={() => setMenuOpen(false)}
