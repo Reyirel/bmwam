@@ -196,30 +196,48 @@ export default function Formulario() {
     setSubmitError('');
 
     try {
-      const codigo = await generateUniqueCodigo();
+      // generamos e intentamos crear el registro; si hay colisión volvemos a intentar
+      let row;
+      for (let intento = 0; intento < 5; intento++) {
+        const codigo = await generateUniqueCodigo();
 
-      // 1) Upload comprobante (omitido en dev si no se seleccionó archivo)
-      const comprovanteUrl = comprobante
-        ? await uploadComprobante(comprobante, codigo)
-        : null;
+        // 1) Upload comprobante (omitido en dev si no se seleccionó archivo)
+        const comprovanteUrl = comprobante
+          ? await uploadComprobante(comprobante, codigo)
+          : null;
 
-      // 2) Insert registro
-      const row = await insertRegistro({
-        codigo,
-        nombre:               form.nombre,
-        email:                form.email,
-        telefono:             form.telefono,
-        talla_jersey:         form.tallaJersey,
-        nombre_jersey:        form.nombreJersey.toUpperCase(),
-        emergencia_nombre:    form.emergenciaNombre,
-        emergencia_telefono:  form.emergenciaTelefono,
-        procedencia:          form.procedencia,
-        moto:                 form.moto,
-        acomp_nombre:         form.acompNombre  ? form.acompNombre.toUpperCase()  : null,
-        acomp_talla:          form.acompTalla   || null,
-        notas:                form.notas        || null,
-        comprobante_url:      comprovanteUrl,
-      });
+        // 2) Insert registro
+        try {
+          row = await insertRegistro({
+            codigo,
+            nombre:               form.nombre,
+            email:                form.email,
+            telefono:             form.telefono,
+            talla_jersey:         form.tallaJersey,
+            nombre_jersey:        form.nombreJersey.toUpperCase(),
+            emergencia_nombre:    form.emergenciaNombre,
+            emergencia_telefono:  form.emergenciaTelefono,
+            procedencia:          form.procedencia,
+            moto:                 form.moto,
+            acomp_nombre:         form.acompNombre  ? form.acompNombre.toUpperCase()  : null,
+            acomp_talla:          form.acompTalla   || null,
+            notas:                form.notas        || null,
+            comprobante_url:      comprovanteUrl,
+          });
+          break; // si insertRegistro tuvo éxito salimos del loop
+        } catch (err) {
+          // si el error es por código duplicado, intentamos de nuevo
+          if (err.message && err.message.includes('código ya existe')) {
+            console.warn('Colisión de código, reintentando generación');
+            continue;
+          }
+          throw err;
+        }
+      }
+
+      if (!row) {
+        throw new Error('No se pudo generar un código único para tu registro. Intenta de nuevo.');
+      }
 
       setRegistroGuardado(row);
       setStep(3);

@@ -84,8 +84,10 @@ export default function StatusCheck() {
       }
       setSearched(true);
     } catch (err) {
-      console.error(err);
-      setError('Ocurrió un error al consultar. Por favor intenta de nuevo.');
+      console.error('Error buscando registro por código', code, err);
+      // mostrar mensaje detallado si hay información útil del error
+      const msg = err.message || 'Ocurrió un error al consultar. Por favor intenta de nuevo.';
+      setError(msg);
     } finally {
       setLoading(false);
     }

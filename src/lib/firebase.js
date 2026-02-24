@@ -10,6 +10,9 @@ import {
   where,
   orderBy,
   limit,
+  runTransaction,
+  getDoc,
+  writeBatch, // added for migration
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -33,6 +36,7 @@ const db      = getFirestore(app);
 const storage = getStorage(app);
 
 const COLLECTION = 'registros';
+// const CODIGOS_COLLECTION = 'codigos'; // ya no necesitamos coleccion extra
 
 /* ─── Generación de código único ──────────────────────────────── */
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -41,27 +45,35 @@ function randomCodigo() {
   return Array.from({ length: 8 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]).join('');
 }
 
+async function isCodigoLibre(codigo) {
+  const codigoNorm = codigo.trim().toUpperCase();
+  // primero verificamos si ya existe un documento con este ID (nuevo esquema)
+  const docRef = doc(db, COLLECTION, codigoNorm);
+  const snap = await getDoc(docRef);
+  if (snap.exists()) return false;
+
+  // también comprobamos cualquier documento antiguo que tenga el campo `codigo`
+  const q = query(collection(db, COLLECTION), where('codigo', '==', codigoNorm), limit(1));
+  const snapshot = await getDocs(q);
+  return snapshot.empty;
+}
+
 /**
  * Genera un código de 8 caracteres garantizando que no exista ya en Firestore.
- * Itera hasta encontrar uno libre (en la práctica siempre lo consigue al primer intento).
+ * Sigue iterando hasta encontrar uno libre. Si hay una colisión en el
+ * momento de insertar se volverá a intentar desde el caller.
  */
 export async function generateUniqueCodigo() {
   let codigo;
   let intentos = 0;
 
   do {
-    if (intentos > 10) throw new Error('No se pudo generar un código único. Intenta de nuevo.');
+    if (intentos > 100) throw new Error('No se pudo generar un código único. Intenta de nuevo.');
     codigo = randomCodigo();
     intentos++;
   } while (!(await isCodigoLibre(codigo)));
 
   return codigo;
-}
-
-async function isCodigoLibre(codigo) {
-  const q        = query(collection(db, COLLECTION), where('codigo', '==', codigo), limit(1));
-  const snapshot = await getDocs(q);
-  return snapshot.empty;
 }
 
 /* ─── Storage ─────────────────────────────────────────────────── */
@@ -87,31 +99,45 @@ export async function uploadComprobante(file, codigo) {
  * Retorna el objeto completo con el id del documento.
  */
 export async function insertRegistro(data) {
-  const payload = { ...data, created_at: new Date().toISOString() };
-  const docRef  = await addDoc(collection(db, COLLECTION), payload);
+  // aseguramos que todo registro comienza en estado "pendiente"
+  const payload = { ...data, estado: data.estado || 'pendiente', created_at: new Date().toISOString() };
+  const docRef = doc(db, COLLECTION, payload.codigo);
+
+  // usamos transacción para evitar colisiones en la inserción
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(docRef);
+    if (snap.exists()) {
+      throw new Error('El código ya existe');
+    }
+    tx.set(docRef, payload);
+  });
+
   return { id: docRef.id, ...payload };
 }
 
 /**
  * Busca un registro por su código de 8 caracteres.
- * Usa limit(1) para que Firestore no necesite índice compuesto.
- * Retorna el objeto o null si no existe.
- *
- * IMPORTANTE: Para que este query funcione debes tener el índice
- * de campo simple "codigo" habilitado en Firestore Console →
- * Indexes → Single field → registros / codigo / Ascending.
- * Firestore lo crea automáticamente al primer uso pero si falla
- * consola de Firebase te dará el link directo para crearlo.
+ * Ahora se obtiene directamente por ID de documento en lugar de realizar
+ * una consulta, eliminando la necesidad de índices y evitando posibles
+ * problemas de consulta.
  */
 export async function getRegistroByCodigo(codigo) {
   const codigoNorm = codigo.trim().toUpperCase();
-  const q          = query(
+
+  // intentamos obtener por ID primero (rinde mejor y no requiere índices)
+  const docRef = doc(db, COLLECTION, codigoNorm);
+  const snap = await getDoc(docRef);
+  if (snap.exists()) {
+    return { id: snap.id, ...snap.data() };
+  }
+
+  // fallback: buscar por campo en documentos antiguos
+  const q = query(
     collection(db, COLLECTION),
     where('codigo', '==', codigoNorm),
     limit(1),
   );
   const snapshot = await getDocs(q);
-
   if (snapshot.empty) return null;
   const docSnap = snapshot.docs[0];
   return { id: docSnap.id, ...docSnap.data() };
@@ -135,4 +161,24 @@ export async function getAllRegistros() {
 export async function updateEstado(id, estado) {
   const docRef = doc(db, COLLECTION, id);
   await updateDoc(docRef, { estado });
+}
+
+/**
+ * Migra documentos antiguos cuyo ID no coincide con el código guardado.
+ * Crea nuevos documentos con el código como ID y elimina los viejos.
+ * Úsalo sólo una vez, desde un entorno administrativo (por ejemplo un
+ * script de Node o desde el panel de admin) y asegúrate de tener backup.
+ */
+export async function migrateRegistrosToCodigoId() {
+  const snaps = await getDocs(collection(db, COLLECTION));
+  const batch = writeBatch(db);
+  snaps.forEach((ds) => {
+    const data = ds.data();
+    if (data.codigo && ds.id !== data.codigo) {
+      const newRef = doc(db, COLLECTION, data.codigo);
+      batch.set(newRef, data);
+      batch.delete(ds.ref);
+    }
+  });
+  await batch.commit();
 }
