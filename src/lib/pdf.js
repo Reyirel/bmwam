@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf';
+import logoBase64 from '../assets/logo.png?inline';
 
 const BLUE   = [0, 102, 204];   // #0066CC
 const DARK   = [10, 10, 20];
@@ -13,15 +14,23 @@ function drawHeader(doc) {
   doc.setFillColor(...BLUE);
   doc.rect(0, 0, 210, 28, 'F');
 
-  // Brand
+  // Brand logo
+  if (logoBase64) {
+    // colocar logo 10x10mm a la izquierda
+    doc.addImage(logoBase64, 'PNG', 14, 6, 10, 10);
+  }
+
+  // Brand text
   doc.setTextColor(...WHITE);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
-  doc.text('BMW AM', 14, 12);
+  // desplazar texto si hay logo
+  const textOffset = logoBase64 ? 14 + 10 + 4 : 14;
+  doc.text('BMW AM', textOffset, 12);
 
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
-  doc.text('GRAN COMPETENCIA 2026  ·  IXMIQUILPAN, HIDALGO', 14, 19);
+  doc.text('GRAN COMPETENCIA 2026  ·  IXMIQUILPAN, HIDALGO', textOffset, 19);
 
   // Thin white line at bottom of header
   doc.setDrawColor(...WHITE);
@@ -38,12 +47,18 @@ function drawFooter(doc, pageHeight) {
   doc.setTextColor(...GRAY);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
+  // logo pequeño al inicio del pie
+  let startX = 14;
+  if (logoBase64) {
+    doc.addImage(logoBase64, 'PNG', startX, y + 1, 6, 6);
+    startX += 6 + 2;
+  }
   doc.text(
     `BMWAM · Ixmiquilpan, Hidalgo · 2026  —  Generado el ${new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}`,
-    14,
+    startX,
     y + 4
   );
-  doc.text('Este documento es de carácter informativo.', 14, y + 9);
+  doc.text('Este documento es de carácter informativo.', startX, y + 9);
 }
 
 /* ─── Data table helper ───────────────────────────────────────── */

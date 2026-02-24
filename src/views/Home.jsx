@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, useInView, animate } from 'framer-moti
 import heroImage from '../assets/herosetionimage.png';
 import secondImage from '../assets/imagen2.png'
 import imagen3 from '../assets/imagen3.png'
+import logo from '../assets/logo.png'
 
 /* ─── Animated Counter ─────────────────────────────────────────── */
 function Counter({ to, suffix = '' }) {
@@ -110,8 +111,9 @@ export default function Home() {
             initial={{ opacity: 0, letterSpacing: '0.2em' }}
             animate={{ opacity: 1, letterSpacing: '0.5em' }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="text-[#0066CC] text-xs font-semibold uppercase mb-6 tracking-[0.5em]"
+            className="text-[#0066CC] text-xs font-semibold uppercase mb-6 tracking-[0.5em] flex items-center justify-center"
           >
+            <img src={logo} alt="BMWAM logo" className="w-6 h-6 mr-2 object-contain" />
             BMWAM · Ixmiquilpan, Hidalgo
           </motion.p>
 

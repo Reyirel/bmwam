@@ -13,6 +13,7 @@ import {
   runTransaction,
   getDoc,
   writeBatch, // added for migration
+  setDoc,
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -181,4 +182,26 @@ export async function migrateRegistrosToCodigoId() {
     }
   });
   await batch.commit();
+}
+
+/**
+ * Obtiene las credenciales del administrador desde Firestore. Si no existe
+ * el documento, crea uno con valores por defecto (correo y contraseña
+ * especificados en el requerimiento) para facilitar el primer despliegue.
+ *
+ * El documento se guarda en la colección `admin` con ID `main`.
+ */
+export async function getAdminCredentials() {
+  const adminRef = doc(db, 'admin', 'main');
+  const snap = await getDoc(adminRef);
+  if (snap.exists()) {
+    return snap.data();
+  }
+  // Si no hay credenciales en la base de datos, creamos las predeterminadas.
+  const defaultCred = {
+    email: 'bmwam@ixmiquilpan.com',
+    password: 'bmwam24.27',
+  };
+  await setDoc(adminRef, defaultCred);
+  return defaultCred;
 }

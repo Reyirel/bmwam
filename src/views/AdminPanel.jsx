@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAllRegistros, updateEstado } from '../lib/firebase';
+import { getAllRegistros, updateEstado, getAdminCredentials } from '../lib/firebase';
 
 /* ─── Helpers ─────────────────────────────────────────────────── */
 const ESTADO_CONFIG = {
@@ -158,6 +158,59 @@ function DetalleModal({ registro, onClose, onCambiarEstado }) {
   );
 }
 
+function LoginModal({ onLogin, error }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onLogin(email.trim(), password);
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+      <motion.form
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        className="bg-[#0d0d14] border border-white/[0.08] rounded-3xl w-full max-w-sm p-6 space-y-4"
+      >
+        <h2 className="text-xl font-bold text-white">Acceso de Administrador</h2>
+        {error && <p className="text-red-400 text-sm">{error}</p>}
+        <div>
+          <label className="text-gray-400 text-sm">Correo electrónico</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full mt-1 px-3 py-2 rounded-lg bg-white/[0.05] text-white placeholder-gray-500 focus:outline-none"
+            required
+          />
+        </div>
+        <div>
+          <label className="text-gray-400 text-sm">Contraseña</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full mt-1 px-3 py-2 rounded-lg bg-white/[0.05] text-white placeholder-gray-500 focus:outline-none"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full py-2.5 bg-[#0066CC] hover:bg-[#0052a3] text-white font-semibold rounded-full transition-all duration-200"
+        >
+          Entrar
+        </button>
+      </motion.form>
+    </motion.div>
+  );
+}
+
 function Section({ title, children }) {
   return (
     <div>
@@ -195,7 +248,60 @@ export default function AdminPanel() {
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState('');
 
+  // new state for admin login
+  const [authorized, setAuthorized] = useState(false);
+  const [adminCreds, setAdminCreds] = useState(null);
+  const [loginError, setLoginError] = useState('');
+
+  // fetch admin credentials once
+  useEffect(() => {
+    (async () => {
+      try {
+        const creds = await getAdminCredentials();
+        setAdminCreds(creds);
+      } catch (err) {
+        console.error('Error al obtener credenciales de admin', err);
+        setLoginError('No se pudo cargar el sistema de autenticación.');
+      }
+    })();
+
+    // when component mounts also check localStorage for existing auth token
+    const stored = localStorage.getItem('bmwam_admin_auth');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.expires && Date.now() < parsed.expires) {
+          setAuthorized(true);
+        } else {
+          localStorage.removeItem('bmwam_admin_auth');
+        }
+      } catch (_e) {
+        localStorage.removeItem('bmwam_admin_auth');
+      }
+    }
+  }, []);
+
+  const handleLogin = (email, password) => {
+    // adminCreds puede ser null mientras se carga
+    if (!adminCreds) return;
+    if (email === adminCreds.email && password === adminCreds.password) {
+      setAuthorized(true);
+      setLoginError('');
+      // persistir por un día
+      const expires = Date.now() + 24 * 60 * 60 * 1000; // 24h en ms
+      localStorage.setItem('bmwam_admin_auth', JSON.stringify({ expires }));
+    } else {
+      setLoginError('Correo o contraseña incorrectos.');
+    }
+  };
+
+  const handleLogout = () => {
+    setAuthorized(false);
+    localStorage.removeItem('bmwam_admin_auth');
+  };
+
   const fetchRegistros = useCallback(async () => {
+    if (!authorized) return; // no ejecutamos si no está autorizado
     try {
       const data = await getAllRegistros();
       setRegistros(data);
@@ -205,7 +311,7 @@ export default function AdminPanel() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [authorized]);
 
   useEffect(() => { fetchRegistros(); }, [fetchRegistros]);
 
@@ -230,199 +336,216 @@ export default function AdminPanel() {
   const registroSeleccionado = registros.find((r) => r.id === seleccionado?.id) ?? null;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white pt-24 pb-20 px-6">
-      <div className="max-w-6xl mx-auto">
-
-        {/* ── Header ── */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-10">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <p className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase mb-2">Panel de Administración</p>
-              <h1 className="text-4xl font-black tracking-tight">Registros</h1>
-              <p className="text-gray-500 text-sm mt-1">Gran Competencia BMWAM 2026 · Ixmiquilpan, Hidalgo</p>
-            </div>
-            <button onClick={fetchRegistros}
-              className="flex items-center gap-2 px-4 py-2.5 border border-white/10 hover:border-white/25 rounded-xl text-gray-400 hover:text-white text-sm transition-all duration-200">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Actualizar
-            </button>
-          </div>
-        </motion.div>
-
-        {/* ── Error ── */}
+    <>
+      {/* Mostrar modal de login si no está autorizado */}
+      {!authorized && adminCreds && (
         <AnimatePresence>
-          {error && (
-            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="mb-6 flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-2xl p-4">
-              <svg className="w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-red-400 text-sm">{error}</p>
-            </motion.div>
-          )}
+          <LoginModal onLogin={handleLogin} error={loginError} />
         </AnimatePresence>
+      )}
 
-        {/* ── Stats ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { key: 'todos',     label: 'Total',      color: 'text-white',         border: 'border-white/10' },
-            { key: 'pendiente', label: 'Pendientes', color: 'text-yellow-400',    border: 'border-yellow-500/20' },
-            { key: 'aprobado',  label: 'Aprobados',  color: 'text-emerald-400',   border: 'border-emerald-500/20' },
-            { key: 'rechazado', label: 'Rechazados', color: 'text-red-400',       border: 'border-red-500/20' },
-          ].map(({ key, label, color, border }) => (
-            <button key={key} onClick={() => setFiltro(key)}
-              className={`relative p-5 rounded-2xl border text-left transition-all duration-200 ${
-                filtro === key ? `${border} bg-white/[0.06]` : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
-              }`}>
-              {filtro === key && (
-                <motion.div layoutId="stat-active" className="absolute inset-0 rounded-2xl bg-white/[0.04] border border-[#0066CC]/30" />
+      {authorized && (
+        <div className="min-h-screen bg-[#050505] text-white pt-24 pb-20 px-6">
+          <div className="max-w-6xl mx-auto">
+
+            {/* ── Header ── */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-10">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <p className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase mb-2">Panel de Administración</p>
+                  <h1 className="text-4xl font-black tracking-tight">Registros</h1>
+                  <p className="text-gray-500 text-sm mt-1">Gran Competencia BMWAM 2026 · Ixmiquilpan, Hidalgo</p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button onClick={fetchRegistros}
+                    className="flex items-center gap-2 px-4 py-2.5 border border-white/10 hover:border-white/25 rounded-xl text-gray-400 hover:text-white text-sm transition-all duration-200">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Actualizar
+                  </button>
+                  <button onClick={handleLogout}
+                    className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-xl transition-all duration-200">
+                    Cerrar sesión
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* ── Error ── */}
+            <AnimatePresence>
+              {error && (
+                <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="mb-6 flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-2xl p-4">
+                  <svg className="w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-red-400 text-sm">{error}</p>
+                </motion.div>
               )}
-              <div className={`text-3xl font-black tabular-nums ${color}`}>
-                {loading ? '—' : counts[key]}
+            </AnimatePresence>
+
+            {/* ── Stats ── */}
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {[
+                { key: 'todos',     label: 'Total',      color: 'text-white',         border: 'border-white/10' },
+                { key: 'pendiente', label: 'Pendientes', color: 'text-yellow-400',    border: 'border-yellow-500/20' },
+                { key: 'aprobado',  label: 'Aprobados',  color: 'text-emerald-400',   border: 'border-emerald-500/20' },
+                { key: 'rechazado', label: 'Rechazados', color: 'text-red-400',       border: 'border-red-500/20' },
+              ].map(({ key, label, color, border }) => (
+                <button key={key} onClick={() => setFiltro(key)}
+                  className={`relative p-5 rounded-2xl border text-left transition-all duration-200 ${
+                    filtro === key ? `${border} bg-white/[0.06]` : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
+                  }`}>
+                  {filtro === key && (
+                    <motion.div layoutId="stat-active" className="absolute inset-0 rounded-2xl bg-white/[0.04] border border-[#0066CC]/30" />
+                  )}
+                  <div className={`text-3xl font-black tabular-nums ${color}`}>
+                    {loading ? '—' : counts[key]}
+                  </div>
+                  <div className="text-gray-500 text-xs font-medium mt-1 uppercase tracking-wide">{label}</div>
+                </button>
+              ))}
+            </motion.div>
+
+            {/* ── Tabla ── */}
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white/[0.03] border border-white/[0.07] rounded-3xl overflow-hidden">
+
+              {/* Cabecera */}
+              <div className="hidden md:grid grid-cols-[auto_1fr_1fr_auto_auto_auto_auto] gap-4 px-6 py-4 border-b border-white/[0.06] text-[10px] font-semibold text-gray-600 uppercase tracking-[0.2em]">
+                <span>Código</span>
+                <span>Participante</span>
+                <span>Motocicleta</span>
+                <span>Jersey</span>
+                <span>Fecha</span>
+                <span>Estado</span>
+                <span />
               </div>
-              <div className="text-gray-500 text-xs font-medium mt-1 uppercase tracking-wide">{label}</div>
-            </button>
-          ))}
-        </motion.div>
 
-        {/* ── Tabla ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-white/[0.03] border border-white/[0.07] rounded-3xl overflow-hidden">
-
-          {/* Cabecera */}
-          <div className="hidden md:grid grid-cols-[auto_1fr_1fr_auto_auto_auto_auto] gap-4 px-6 py-4 border-b border-white/[0.06] text-[10px] font-semibold text-gray-600 uppercase tracking-[0.2em]">
-            <span>Código</span>
-            <span>Participante</span>
-            <span>Motocicleta</span>
-            <span>Jersey</span>
-            <span>Fecha</span>
-            <span>Estado</span>
-            <span />
-          </div>
-
-          {/* Filas */}
-          <div className="divide-y divide-white/[0.05]">
-            {loading ? (
-              <div className="py-20 flex items-center justify-center gap-3 text-gray-600">
-                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                </svg>
-                <span className="text-sm">Cargando registros...</span>
-              </div>
-            ) : (
-              <AnimatePresence initial={false}>
-                {filtrados.length === 0 ? (
-                  <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className="py-20 text-center text-gray-600 text-sm">
-                    No hay registros en esta categoría.
-                  </motion.div>
+              {/* Filas */}
+              <div className="divide-y divide-white/[0.05]">
+                {loading ? (
+                  <div className="py-20 flex items-center justify-center gap-3 text-gray-600">
+                    <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                    </svg>
+                    <span className="text-sm">Cargando registros...</span>
+                  </div>
                 ) : (
-                  filtrados.map((r) => (
-                    <motion.div key={r.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}
-                      className="px-6 py-4 hover:bg-white/[0.02] transition-colors cursor-pointer"
-                      onClick={() => setSeleccionado(r)}>
+                  <AnimatePresence initial={false}>
+                    {filtrados.length === 0 ? (
+                      <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        className="py-20 text-center text-gray-600 text-sm">
+                        No hay registros en esta categoría.
+                      </motion.div>
+                    ) : (
+                      filtrados.map((r) => (
+                        <motion.div key={r.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}
+                          className="px-6 py-4 hover:bg-white/[0.02] transition-colors cursor-pointer"
+                          onClick={() => setSeleccionado(r)}>
 
-                      {/* Mobile */}
-                      <div className="md:hidden flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-white text-sm font-semibold truncate">{r.nombre}</span>
-                            <span className="text-[10px] font-mono text-gray-600 bg-white/[0.05] px-1.5 py-0.5 rounded flex-shrink-0">{r.codigo}</span>
+                          {/* Mobile */}
+                          <div className="md:hidden flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-white text-sm font-semibold truncate">{r.nombre}</span>
+                                <span className="text-[10px] font-mono text-gray-600 bg-white/[0.05] px-1.5 py-0.5 rounded flex-shrink-0">{r.codigo}</span>
+                              </div>
+                              <p className="text-gray-500 text-xs truncate">{r.moto}</p>
+                            </div>
+                            <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                              <EstadoBadge estado={r.estado} />
+                              <span className="text-gray-600 text-xs">{formatFecha(r.created_at)}</span>
+                            </div>
                           </div>
-                          <p className="text-gray-500 text-xs truncate">{r.moto}</p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-                          <EstadoBadge estado={r.estado} />
-                          <span className="text-gray-600 text-xs">{formatFecha(r.created_at)}</span>
-                        </div>
-                      </div>
 
-                      {/* Desktop */}
-                      <div className="hidden md:grid grid-cols-[auto_1fr_1fr_auto_auto_auto_auto] gap-4 items-center">
-                        <span className="text-xs font-mono text-gray-500 bg-white/[0.05] px-2.5 py-1 rounded-lg tracking-widest">
-                          {r.codigo}
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-white text-sm font-semibold truncate">{r.nombre}</p>
-                          <p className="text-gray-500 text-xs mt-0.5 truncate">{r.email}</p>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-gray-300 text-sm truncate">{r.moto}</p>
-                          <p className="text-gray-600 text-xs mt-0.5">{r.procedencia}</p>
-                        </div>
-                        <div className="text-center">
-                          <span className="inline-block bg-[#0066CC]/15 border border-[#0066CC]/20 text-[#6aadff] text-xs font-bold px-3 py-1 rounded-lg">
-                            {r.talla_jersey}
-                          </span>
-                          <p className="text-gray-600 text-xs mt-1">{r.nombre_jersey}</p>
-                        </div>
-                        <span className="text-gray-500 text-sm whitespace-nowrap">{formatFecha(r.created_at)}</span>
-                        <EstadoBadge estado={r.estado} />
-                        {/* Acciones rápidas */}
-                        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                          {r.estado === 'pendiente' ? (
-                            <>
-                              <button onClick={() => cambiarEstado(r.id, 'rechazado')} title="Rechazar"
-                                className="w-8 h-8 rounded-lg border border-red-500/25 text-red-400 hover:bg-red-500/15 flex items-center justify-center transition-colors">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                              </button>
-                              <button onClick={() => cambiarEstado(r.id, 'aprobado')} title="Aprobar"
-                                className="w-8 h-8 rounded-lg border border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/15 flex items-center justify-center transition-colors">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                                </svg>
-                              </button>
-                            </>
-                          ) : (
-                            <button onClick={() => cambiarEstado(r.id, 'pendiente')} title="Restablecer"
-                              className="w-8 h-8 rounded-lg border border-white/10 text-gray-600 hover:text-gray-400 hover:border-white/20 flex items-center justify-center transition-colors">
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                              </svg>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))
+                          {/* Desktop */}
+                          <div className="hidden md:grid grid-cols-[auto_1fr_1fr_auto_auto_auto_auto] gap-4 items-center">
+                            <span className="text-xs font-mono text-gray-500 bg-white/[0.05] px-2.5 py-1 rounded-lg tracking-widest">
+                              {r.codigo}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="text-white text-sm font-semibold truncate">{r.nombre}</p>
+                              <p className="text-gray-500 text-xs mt-0.5 truncate">{r.email}</p>
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-gray-300 text-sm truncate">{r.moto}</p>
+                              <p className="text-gray-600 text-xs mt-0.5">{r.procedencia}</p>
+                            </div>
+                            <div className="text-center">
+                              <span className="inline-block bg-[#0066CC]/15 border border-[#0066CC]/20 text-[#6aadff] text-xs font-bold px-3 py-1 rounded-lg">
+                                {r.talla_jersey}
+                              </span>
+                              <p className="text-gray-600 text-xs mt-1">{r.nombre_jersey}</p>
+                            </div>
+                            <span className="text-gray-500 text-sm whitespace-nowrap">{formatFecha(r.created_at)}</span>
+                            <EstadoBadge estado={r.estado} />
+                            {/* Acciones rápidas */}
+                            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                              {r.estado === 'pendiente' ? (
+                                <>
+                                  <button onClick={() => cambiarEstado(r.id, 'rechazado')} title="Rechazar"
+                                    className="w-8 h-8 rounded-lg border border-red-500/25 text-red-400 hover:bg-red-500/15 flex items-center justify-center transition-colors">
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </button>
+                                  <button onClick={() => cambiarEstado(r.id, 'aprobado')} title="Aprobar"
+                                    className="w-8 h-8 rounded-lg border border-emerald-500/25 text-emerald-400 hover:bg-emerald-500/15 flex items-center justify-center transition-colors">
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  </button>
+                                </>
+                              ) : (
+                                <button onClick={() => cambiarEstado(r.id, 'pendiente')} title="Restablecer"
+                                  className="w-8 h-8 rounded-lg border border-white/10 text-gray-600 hover:text-gray-400 hover:border-white/20 flex items-center justify-center transition-colors">
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))
+                    )}
+                  </AnimatePresence>
                 )}
-              </AnimatePresence>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-white/[0.06] flex items-center justify-between flex-wrap gap-3">
-            <p className="text-gray-600 text-xs">
-              Mostrando <span className="text-gray-400 font-semibold">{filtrados.length}</span> de{' '}
-              <span className="text-gray-400 font-semibold">{registros.length}</span> registros
-            </p>
-            {counts.pendiente > 0 && (
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-                <span className="text-gray-600 text-xs">{counts.pendiente} pendientes de revisión</span>
               </div>
-            )}
-          </div>
-        </motion.div>
-      </div>
 
-      {/* Modal */}
-      <AnimatePresence>
-        {registroSeleccionado && (
-          <DetalleModal
-            registro={registroSeleccionado}
-            onClose={() => setSeleccionado(null)}
-            onCambiarEstado={cambiarEstado}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-white/[0.06] flex items-center justify-between flex-wrap gap-3">
+                <p className="text-gray-600 text-xs">
+                  Mostrando <span className="text-gray-400 font-semibold">{filtrados.length}</span> de{' '}
+                  <span className="text-gray-400 font-semibold">{registros.length}</span> registros
+                </p>
+                {counts.pendiente > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+                    <span className="text-gray-600 text-xs">{counts.pendiente} pendientes de revisión</span>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Modal */}
+          <AnimatePresence>
+            {registroSeleccionado && (
+              <DetalleModal
+                registro={registroSeleccionado}
+                onClose={() => setSeleccionado(null)}
+                onCambiarEstado={cambiarEstado}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+    </>
   );
 }

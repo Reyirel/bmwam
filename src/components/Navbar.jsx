@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import logo from '../assets/logo.png';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -28,6 +29,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="BMWAM logo" className="w-8 h-8 object-contain" />
           <span className="text-xl font-black tracking-tight text-white leading-none">
             BMW <span className="text-[#0066CC]">AM</span>
             <span className="block text-[10px] font-medium text-gray-500 tracking-[0.2em] uppercase">Ixmiquilpan · Hidalgo</span>
