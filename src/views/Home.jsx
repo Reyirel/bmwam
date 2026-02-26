@@ -2,8 +2,8 @@ import { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView, animate } from 'framer-motion';
 import heroImage from '../assets/herosetionimage.png';
-import secondImage from '../assets/imagen2.png'
-import imagen3 from '../assets/imagen3.png'
+import bmwVideo from '../assets/bmwvideo.mp4'
+import imagen3 from '../assets/imagen3.jpg'
 import logo from '../assets/logo.png'
 
 /* ─── Animated Counter ─────────────────────────────────────────── */
@@ -46,7 +46,6 @@ function FadeUp({ children, delay = 0, className = '' }) {
 
 /* ─── Data ──────────────────────────────────────────────────────── */
 const STATS = [
-  { value: 4,   suffix: '',     label: 'Categorías de Competencia' },
   { value: 3,   suffix: '',     label: 'Rutas Diseñadas' },
   { value: 300, suffix: '+',   label: 'Cupos Disponibles' },
   { value: 120, suffix: ' km', label: 'Total de Recorrido' },
@@ -70,13 +69,13 @@ const COSTS = [
   {
     tag: 'Socios',
     label: 'Socios BMW AM',
-    price: '$3,200.00',
+    price: '$2,400.00',
     currency: 'MXN',
   },
   {
     tag: 'General',
     label: 'No Socios',
-    price: '$3,450.00',
+    price: '$2,600.00',
     currency: 'MXN',
     featured: true,
   },
@@ -135,11 +134,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="text-6xl sm:text-7xl md:text-[88px] font-black leading-[1.02] mb-6 tracking-tight"
+            className="text-3xl sm:text-5xl md:text-[76px] font-black leading-[1.02] mb-6 tracking-tight"
           >
-            <span className="block text-white">Gran Competencia</span>
+            <span className="block text-white">XV Convención Internacional</span>
             <span className="block bg-gradient-to-r from-[#0066CC] via-[#1a8fff] to-[#00c6ff] bg-clip-text text-transparent">
-              BMWAM 2026
+              BMWAM Ixmiquilpan 2026
             </span>
           </motion.h1>
 
@@ -149,7 +148,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.75 }}
             className="text-lg sm:text-xl text-gray-300/90 mb-10 max-w-xl mx-auto leading-relaxed font-light"
           >
-            El evento de motociclismo más emocionante del estado de Hidalgo. Rutas únicas, categorías para todos los niveles y la adrenalina BMW en cada kilómetro.
+            El evento de motociclismo más emocionante del Estado de Hidalgo, rutas únicas y la adrenalina BMW en cada kilómetro.
           </motion.p>
 
           <motion.div
@@ -190,14 +189,19 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
+          HOTEL — PALMAS HOTEL & SPA (HOSPEDAJE OFICIAL)
+      ══════════════════════════════════════════════════════ */}
+      
+
+      {/* ══════════════════════════════════════════════════════
           STATS
       ══════════════════════════════════════════════════════ */}
-      <section className="py-20 border-y border-white/[0.06] bg-[#080810]">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6">
+      <section className="py-12 md:py-20 border-y border-white/[0.06] bg-[#050505]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-3 gap-4 sm:gap-8">
             {STATS.map((s, i) => (
               <FadeUp key={i} delay={i * 0.08} className="text-center">
-                <div className="text-4xl md:text-5xl font-black text-[#0066CC] mb-2 tabular-nums">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0066CC] mb-2 tabular-nums">
                   <Counter to={s.value} suffix={s.suffix} />
                 </div>
                 <p className="text-gray-500 text-xs uppercase tracking-[0.2em] font-medium">{s.label}</p>
@@ -210,24 +214,24 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           ABOUT / EL EVENTO
       ══════════════════════════════════════════════════════ */}
-      <section id="evento" className="py-32 px-6">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+      <section id="evento" className="py-16 md:py-32 px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 md:gap-16 items-center">
           {/* Text */}
           <FadeUp>
             <span className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase block mb-5">
               Sobre el Evento
             </span>
-            <h2 className="text-4xl md:text-5xl font-black mb-7 leading-[1.1] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-5 md:mb-7 leading-[1.1] tracking-tight">
               Una experiencia{' '}
               <span className="bg-gradient-to-r from-[#0066CC] to-[#1a8fff] bg-clip-text text-transparent">
                 única en Hidalgo
               </span>
             </h2>
             <p className="text-gray-400 text-base leading-relaxed mb-5 font-light">
-              La Gran Competencia BMWAM llega a Ixmiquilpan, Hidalgo — un evento pensado para apasionados de las dos ruedas. Con rutas diseñadas por expertos a través del Valle del Mezquital, vivirás la adrenalina del motociclismo en uno de los paisajes más impresionantes del centro de México.
+              La XV Convención Internacional de Amigos Motociclistas BMW llega a Ixmiquilpan, Hidalgo — un evento pensado para apasionados de las dos ruedas. Con rutas diseñadas por expertos a través del Valle del Mezquital, vivirás la adrenalina del motociclismo en uno de los paisajes más impresionantes del centro de México.
             </p>
             <p className="text-gray-400 text-base leading-relaxed font-light">
-              Ya seas piloto experimentado o estés comenzando tu camino en el mundo BMWAM, este evento tiene una categoría para ti. Reserva tu lugar antes de que se agoten los cupos.
+              Reserva tu lugar antes de que se agoten los cupos.
             </p>
             <div className="mt-8 flex items-center gap-6">
               <Link
@@ -251,7 +255,14 @@ export default function Home() {
             className="relative"
           >
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-              <img src={secondImage} alt="BMWAM Ixmiquilpan" className="w-full h-full object-cover" />
+              <video
+                src={bmwVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
               {/* Badge */}
               <div className="absolute bottom-5 left-5 bg-[#050505]/80 backdrop-blur-xl border border-white/10 rounded-xl px-5 py-3">
@@ -269,13 +280,13 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           IMAGEN BMW IXMIQUILPAN
       ══════════════════════════════════════════════════════ */}
-      <section className="py-20 px-6 bg-[#080810]">
+      <section className="py-14 md:py-20 px-4 sm:px-6 bg-[#080810]">
         <div className="max-w-6xl mx-auto">
-          <FadeUp className="text-center mb-12">
+          <FadeUp className="text-center mb-8 sm:mb-12">
             <span className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase block mb-4">
               Ixmiquilpan, Hidalgo
             </span>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
               BMWAM en el Valle del Mezquital
             </h2>
           </FadeUp>
@@ -294,9 +305,9 @@ export default function Home() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/40 via-transparent to-transparent" />
-            <div className="absolute bottom-8 left-8 bg-[#050505]/80 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4">
-              <p className="text-[#0066CC] text-xs font-semibold tracking-widest uppercase mb-1">Sede del Evento</p>
-              <p className="text-white text-lg font-black leading-tight">Ixmiquilpan · Hidalgo · 2026</p>
+            <div className="absolute bottom-4 sm:bottom-8 left-4 sm:left-8 bg-[#050505]/80 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4">
+              <p className="text-[#0066CC] text-[10px] sm:text-xs font-semibold tracking-widest uppercase mb-1">Sede del Evento</p>
+              <p className="text-white text-sm sm:text-lg font-black leading-tight">Ixmiquilpan · Hidalgo · 2026</p>
             </div>
           </motion.div>
         </div>
@@ -305,7 +316,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           FULL-BLEED IMAGE BANNER
       ══════════════════════════════════════════════════════ */}
-      <section className="relative py-36 px-6 overflow-hidden">
+      <section className="relative py-20 md:py-36 px-4 sm:px-6 overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImage} alt="" className="w-full h-full object-cover opacity-15" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/75 to-[#050505]" />
@@ -318,7 +329,7 @@ export default function Home() {
             <p className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase mb-5">
               Cupos Limitados
             </p>
-            <h2 className="text-5xl sm:text-6xl md:text-7xl font-black mb-6 tracking-tight leading-none">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 tracking-tight leading-none">
               Asegura tu{' '}
               <span className="bg-gradient-to-r from-[#0066CC] via-[#1a8fff] to-[#00c6ff] bg-clip-text text-transparent">
                 lugar ahora
@@ -343,7 +354,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           COSTOS DE ADMISIÓN
       ══════════════════════════════════════════════════════ */}
-      <section id="costos" className="py-32 px-6 bg-[#080810]">
+      <section id="costos" className="py-16 md:py-32 px-4 sm:px-6 bg-[#080810]">
         <div className="max-w-4xl mx-auto">
           <FadeUp className="text-center mb-16">
             <span className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase block mb-4">
@@ -365,7 +376,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: i * 0.12 }}
                 viewport={{ once: true }}
-                className={`relative p-12 rounded-3xl text-center border transition-all duration-300 ${
+                className={`relative p-8 md:p-12 rounded-3xl text-center border transition-all duration-300 ${
                   item.featured
                     ? 'bg-[#0066CC]/[0.08] border-[#0066CC]/40'
                     : 'bg-white/[0.03] border-white/[0.07]'
@@ -379,7 +390,7 @@ export default function Home() {
                 <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase mb-8">
                   {item.label}
                 </p>
-                <div className="text-6xl md:text-7xl font-black text-white mb-2 tabular-nums">
+                <div className="text-5xl sm:text-6xl md:text-7xl font-black text-white mb-2 tabular-nums">
                   {item.price}
                 </div>
                 <div className="text-[#0066CC] font-bold text-base tracking-[0.2em]">
@@ -394,14 +405,14 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           CTA CARD
       ══════════════════════════════════════════════════════ */}
-      <section className="py-28 px-6">
+      <section className="py-16 md:py-28 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             viewport={{ once: true }}
-            className="relative p-12 md:p-16 rounded-3xl overflow-hidden text-center border border-[#0066CC]/20"
+            className="relative p-8 md:p-16 rounded-3xl overflow-hidden text-center border border-[#0066CC]/20"
           >
             {/* BG */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#0066CC]/10 via-[#080820] to-[#050505]" />
@@ -412,11 +423,11 @@ export default function Home() {
               <p className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase mb-4">
                 Formulario de Registro
               </p>
-              <h2 className="text-4xl md:text-5xl font-black mb-5 tracking-tight">
-                ¿Listo para competir?
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-5 tracking-tight">
+                ¿Listo para unirte?
               </h2>
               <p className="text-gray-300/80 text-lg mb-10 max-w-xl mx-auto font-light leading-relaxed">
-                Completa el formulario de registro para reservar tu lugar. Los cupos son limitados y se asignan por orden de solicitud.
+                Completa el formulario de registro para reservar tu lugar en la convención. Los cupos son limitados y se asignan por orden de solicitud.
               </p>
               <Link
                 to="/formulario"
@@ -432,10 +443,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          HOTEL — PALMAS HOTEL & SPA
-      ══════════════════════════════════════════════════════ */}
-      <section id="hotel" className="py-32 px-6 bg-[#080810]">
+      <section id="hotel" className="py-16 md:py-32 px-4 sm:px-6 bg-[#080810]">
         <div className="max-w-6xl mx-auto">
 
           {/* Header */}
@@ -443,17 +451,38 @@ export default function Home() {
             <span className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase block mb-4">
               Hospedaje Oficial
             </span>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-              Palmas Hotel &amp; Spa
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-3">
+              <a
+                href="https://www.hotelpalmastephe.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#0066CC] transition-colors duration-300"
+              >
+                Palmas Hotel &amp; Spa
+              </a>
             </h2>
-            <p className="text-gray-500 text-sm font-light tracking-widest uppercase">
+            <p className="text-gray-500 text-sm font-light tracking-wide mb-1">
+              Carretera México–Laredo Km 152 · El Tephé, Ixmiquilpan, Hidalgo
+            </p>
+            <a
+              href="https://www.hotelpalmastephe.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[#0066CC] text-xs font-medium hover:underline underline-offset-4 mt-1"
+            >
+              hotelpalmastephe.com
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+            <p className="text-gray-600 text-xs font-light tracking-widest uppercase mt-4">
               Tarifa Rack 2026
             </p>
           </FadeUp>
 
           {/* Includes */}
           <FadeUp delay={0.1} className="mb-12">
-            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto">
               {[
                 'Acceso al Parque Acuático El Tephé',
                 '1 desayuno por noche de hospedaje, de acuerdo con la capacidad de la habitación',
@@ -474,15 +503,15 @@ export default function Home() {
           </FadeUp>
 
           {/* Room table */}
-          <FadeUp delay={0.15} className="mb-12 overflow-x-auto">
-            <div className="rounded-2xl border border-white/[0.07] overflow-hidden">
-              <table className="w-full text-sm">
+          <FadeUp delay={0.15} className="mb-12 -mx-4 sm:mx-0 overflow-x-auto">
+            <div className="rounded-none sm:rounded-2xl border-y sm:border border-white/[0.07] overflow-hidden">
+              <table className="w-full text-sm min-w-[480px]">
                 <thead>
                   <tr className="bg-white/[0.04] border-b border-white/[0.07]">
-                    <th className="text-left px-6 py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[11px]">Habitación</th>
-                    <th className="text-left px-6 py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[11px] hidden sm:table-cell">Especificaciones</th>
-                    <th className="text-center px-4 py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[11px]">Capacidad</th>
-                    <th className="text-right px-6 py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[11px]">Tarifa MXN</th>
+                    <th className="text-left px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Habitación</th>
+                    <th className="text-left px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px] hidden sm:table-cell">Especificaciones</th>
+                    <th className="text-center px-3 sm:px-4 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Cap.</th>
+                    <th className="text-right px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Tarifa MXN</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -493,14 +522,14 @@ export default function Home() {
                         i % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.015]'
                       }`}
                     >
-                      <td className="px-6 py-4 text-white font-medium">{room.type}</td>
-                      <td className="px-6 py-4 text-gray-500 hidden sm:table-cell">{room.specs}</td>
-                      <td className="px-4 py-4 text-center">
-                        <span className="inline-block bg-[#0066CC]/10 border border-[#0066CC]/25 text-[#0066CC] text-[11px] font-semibold tracking-wide px-3 py-1 rounded-full">
+                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-white font-medium text-xs sm:text-sm">{room.type}</td>
+                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 text-xs sm:text-sm hidden sm:table-cell">{room.specs}</td>
+                      <td className="px-3 sm:px-4 py-3 sm:py-4 text-center">
+                        <span className="inline-block bg-[#0066CC]/10 border border-[#0066CC]/25 text-[#0066CC] text-[10px] sm:text-[11px] font-semibold tracking-wide px-2 sm:px-3 py-1 rounded-full">
                           {room.capacity}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right text-white font-bold tabular-nums">{room.price}</td>
+                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-right text-white font-bold tabular-nums text-xs sm:text-sm">{room.price}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -510,7 +539,7 @@ export default function Home() {
 
           {/* Phone numbers */}
           <FadeUp delay={0.17} className="mb-6">
-            <div className="bg-white/[0.03] border border-white/[0.07] rounded-2xl px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="bg-white/[0.03] border border-white/[0.07] rounded-2xl px-5 sm:px-8 py-5 sm:py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase flex-shrink-0">
                 Contacto del hotel
               </p>
@@ -529,11 +558,11 @@ export default function Home() {
           </FadeUp>
 
           {/* Bank info + Discount code */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
 
             {/* Bank transfer */}
             <FadeUp delay={0.2}>
-              <div className="h-full bg-white/[0.03] border border-white/[0.07] rounded-2xl p-8">
+              <div className="h-full bg-white/[0.03] border border-white/[0.07] rounded-2xl p-5 sm:p-8">
                 <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase mb-6">
                   Datos para depósito / transferencia
                 </p>
@@ -556,13 +585,13 @@ export default function Home() {
 
             {/* Discount code */}
             <FadeUp delay={0.25}>
-              <div className="h-full bg-[#0066CC]/[0.07] border border-[#0066CC]/30 rounded-2xl p-8 flex flex-col justify-center text-center">
+              <div className="h-full bg-[#0066CC]/[0.07] border border-[#0066CC]/30 rounded-2xl p-5 sm:p-8 flex flex-col justify-center text-center">
                 <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase mb-6">
                   Código de descuento exclusivo
                 </p>
                 <div className="mb-4">
-                  <div className="inline-block bg-[#050505] border-2 border-dashed border-[#0066CC]/50 rounded-2xl px-10 py-5">
-                    <span className="text-4xl font-black text-white tracking-widest">AMBMW2026</span>
+                  <div className="inline-block bg-[#050505] border-2 border-dashed border-[#0066CC]/50 rounded-2xl px-6 sm:px-10 py-4 sm:py-5">
+                    <span className="text-2xl sm:text-4xl font-black text-white tracking-widest">AMBMW2026</span>
                   </div>
                 </div>
                 <div className="inline-flex items-center justify-center gap-2 mx-auto bg-[#0066CC] text-white text-sm font-bold rounded-full px-6 py-2 mb-6">
@@ -591,7 +620,7 @@ export default function Home() {
               <p className="text-gray-600 text-xs mt-1 tracking-wider">Ixmiquilpan · Hidalgo · 2026</p>
             </div>
 
-            <div className="flex gap-8">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-8">
               {[
                 { label: 'Inicio', to: '/' },
                 { label: 'El Evento', href: '#evento' },
@@ -612,7 +641,7 @@ export default function Home() {
             </div>
 
             <p className="text-gray-700 text-xs">
-              © {new Date().getFullYear()} BMWAM. Todos los derechos reservados.
+              © {new Date().getFullYear()} Create by Luis Alberto Chavero Chavez y Hazel Jared Almaraz Martinez. Todos los derechos reservados.
             </p>
           </div>
         </div>

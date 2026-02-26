@@ -109,9 +109,9 @@ export default function StatusCheck() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
           className="text-center mb-12">
           <p className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase mb-4">
-            Gran Competencia BMWAM 2026
+            XV Convención BMWAM 2026
           </p>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4">
             Estado de Registro
           </h1>
           <p className="text-gray-400 text-base font-light leading-relaxed max-w-md mx-auto">
@@ -122,11 +122,11 @@ export default function StatusCheck() {
         {/* ── Buscador ── */}
         <motion.form initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}
           onSubmit={handleSearch} className="mb-8">
-          <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-6 md:p-8">
+          <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-5 sm:p-8">
             <label className="block text-sm font-medium text-gray-300 mb-3">
               Código de Registro <span className="text-[#0066CC]">*</span>
             </label>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3">
               <input
                 value={codigo}
                 onChange={(e) => {
@@ -136,7 +136,7 @@ export default function StatusCheck() {
                 }}
                 placeholder="Ej. A3F8C2D1"
                 maxLength={8}
-                className="flex-1 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 text-base font-mono tracking-[0.2em] uppercase focus:outline-none focus:border-[#0066CC]/60 focus:bg-white/[0.06] transition-all duration-200"
+                className="flex-1 min-w-0 bg-white/[0.04] border border-white/10 rounded-xl px-3 sm:px-4 py-3 text-white placeholder-gray-600 text-sm sm:text-base font-mono tracking-[0.15em] sm:tracking-[0.2em] uppercase focus:outline-none focus:border-[#0066CC]/60 focus:bg-white/[0.06] transition-all duration-200"
                 spellCheck={false}
               />
               <motion.button whileHover={{ scale: loading ? 1 : 1.03 }} whileTap={{ scale: loading ? 1 : 0.97 }}
