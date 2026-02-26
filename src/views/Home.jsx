@@ -52,6 +52,20 @@ const STATS = [
   { value: 120, suffix: ' km', label: 'Total de Recorrido' },
 ];
 
+const ROOMS = [
+  { type: 'Habitación estándar',          specs: '1 cama Queen Size',                              capacity: '2 pax', price: '$2,800' },
+  { type: 'Habitación estándar plus',     specs: '1 cama King Size',                               capacity: '2 pax', price: '$3,100' },
+  { type: 'Habitación premium',           specs: '1 cama King Size',                               capacity: '2 pax', price: '$3,600' },
+  { type: 'Habitación suite',             specs: '1 cama King Size',                               capacity: '2 pax', price: '$4,500' },
+  { type: 'Suite jacuzzi',                specs: '1 cama King Size · jacuzzi',                     capacity: '2 pax', price: '$5,200' },
+  { type: 'Estándar doble',               specs: '2 camas Queen Size',                             capacity: '4 pax', price: '$4,800' },
+  { type: 'Premium doble',                specs: '2 camas Queen Size',                             capacity: '4 pax', price: '$5,000' },
+  { type: 'Premium terraza',              specs: '2 camas Queen Size · terraza',                   capacity: '4 pax', price: '$5,300' },
+  { type: 'Estándar familiar',            specs: '—',                                              capacity: '8 pax', price: '$7,900' },
+  { type: 'Penthouse',                    specs: '3 recámaras · 3 camas King Size',                capacity: '6 pax', price: '$14,250' },
+  { type: 'Penthouse Plus',               specs: '3 recámaras · 3 camas King Size + 1 sofá cama', capacity: '8 pax', price: '$16,700' },
+];
+
 const COSTS = [
   {
     tag: 'Socios',
@@ -419,6 +433,152 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
+          HOTEL — PALMAS HOTEL & SPA
+      ══════════════════════════════════════════════════════ */}
+      <section id="hotel" className="py-32 px-6 bg-[#080810]">
+        <div className="max-w-6xl mx-auto">
+
+          {/* Header */}
+          <FadeUp className="text-center mb-16">
+            <span className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase block mb-4">
+              Hospedaje Oficial
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
+              Palmas Hotel &amp; Spa
+            </h2>
+            <p className="text-gray-500 text-sm font-light tracking-widest uppercase">
+              Tarifa Rack 2026
+            </p>
+          </FadeUp>
+
+          {/* Includes */}
+          <FadeUp delay={0.1} className="mb-12">
+            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+              {[
+                'Acceso al Parque Acuático El Tephé',
+                '1 desayuno por noche de hospedaje, de acuerdo con la capacidad de la habitación',
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 bg-white/[0.03] border border-white/[0.07] rounded-2xl px-5 py-4"
+                >
+                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-[#0066CC]/20 border border-[#0066CC]/40 flex items-center justify-center">
+                    <svg className="w-3 h-3 text-[#0066CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </span>
+                  <p className="text-gray-300 text-sm leading-relaxed">{item}</p>
+                </div>
+              ))}
+            </div>
+          </FadeUp>
+
+          {/* Room table */}
+          <FadeUp delay={0.15} className="mb-12 overflow-x-auto">
+            <div className="rounded-2xl border border-white/[0.07] overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-white/[0.04] border-b border-white/[0.07]">
+                    <th className="text-left px-6 py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[11px]">Habitación</th>
+                    <th className="text-left px-6 py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[11px] hidden sm:table-cell">Especificaciones</th>
+                    <th className="text-center px-4 py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[11px]">Capacidad</th>
+                    <th className="text-right px-6 py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[11px]">Tarifa MXN</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ROOMS.map((room, i) => (
+                    <tr
+                      key={i}
+                      className={`border-b border-white/[0.05] transition-colors hover:bg-white/[0.03] ${
+                        i % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.015]'
+                      }`}
+                    >
+                      <td className="px-6 py-4 text-white font-medium">{room.type}</td>
+                      <td className="px-6 py-4 text-gray-500 hidden sm:table-cell">{room.specs}</td>
+                      <td className="px-4 py-4 text-center">
+                        <span className="inline-block bg-[#0066CC]/10 border border-[#0066CC]/25 text-[#0066CC] text-[11px] font-semibold tracking-wide px-3 py-1 rounded-full">
+                          {room.capacity}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right text-white font-bold tabular-nums">{room.price}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </FadeUp>
+
+          {/* Phone numbers */}
+          <FadeUp delay={0.17} className="mb-6">
+            <div className="bg-white/[0.03] border border-white/[0.07] rounded-2xl px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase flex-shrink-0">
+                Contacto del hotel
+              </p>
+              <div className="flex flex-col sm:flex-row gap-6">
+                {[
+                  { label: 'Teléfono / WhatsApp', value: '771-711-0007' },
+                  { label: 'Teléfono', value: '771-110-4815' },
+                ].map(({ label, value }) => (
+                  <div key={value} className="flex flex-col gap-0.5">
+                    <span className="text-gray-600 text-[10px] uppercase tracking-[0.2em] font-medium">{label}</span>
+                    <span className="text-white text-sm font-medium tabular-nums">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeUp>
+
+          {/* Bank info + Discount code */}
+          <div className="grid md:grid-cols-2 gap-6">
+
+            {/* Bank transfer */}
+            <FadeUp delay={0.2}>
+              <div className="h-full bg-white/[0.03] border border-white/[0.07] rounded-2xl p-8">
+                <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase mb-6">
+                  Datos para depósito / transferencia
+                </p>
+                <div className="space-y-4">
+                  {[
+                    { label: 'Razón social', value: 'OPERADORA TURÍSTICA TEPHÉ S. DE R.L. DE C.V.' },
+                    { label: 'Banco', value: 'BBVA (Bancomer)' },
+                    { label: 'Sucursal', value: '5599' },
+                    { label: 'Cuenta', value: '0198466106' },
+                    { label: 'CLABE interbancaria', value: '012298001984661063' },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex flex-col gap-0.5">
+                      <span className="text-gray-600 text-[10px] uppercase tracking-[0.2em] font-medium">{label}</span>
+                      <span className="text-white text-sm font-medium tabular-nums">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </FadeUp>
+
+            {/* Discount code */}
+            <FadeUp delay={0.25}>
+              <div className="h-full bg-[#0066CC]/[0.07] border border-[#0066CC]/30 rounded-2xl p-8 flex flex-col justify-center text-center">
+                <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase mb-6">
+                  Código de descuento exclusivo
+                </p>
+                <div className="mb-4">
+                  <div className="inline-block bg-[#050505] border-2 border-dashed border-[#0066CC]/50 rounded-2xl px-10 py-5">
+                    <span className="text-4xl font-black text-white tracking-widest">AMBMW2026</span>
+                  </div>
+                </div>
+                <div className="inline-flex items-center justify-center gap-2 mx-auto bg-[#0066CC] text-white text-sm font-bold rounded-full px-6 py-2 mb-6">
+                  25% de descuento
+                </div>
+                <p className="text-gray-400 text-xs leading-relaxed font-light">
+                  Menciona este código al momento de realizar tu reservación para que el descuento sea aplicado.
+                </p>
+              </div>
+            </FadeUp>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
           FOOTER
       ══════════════════════════════════════════════════════ */}
       <footer className="border-t border-white/[0.06] bg-[#080810]">
@@ -436,6 +596,7 @@ export default function Home() {
                 { label: 'Inicio', to: '/' },
                 { label: 'El Evento', href: '#evento' },
                 { label: 'Costos', href: '#costos' },
+                { label: 'Hotel', href: '#hotel' },
                 { label: 'Registro', to: '/formulario' },
               ].map((item) =>
                 item.to ? (

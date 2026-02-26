@@ -41,7 +41,8 @@ export default function Navbar() {
           {[
             { label: 'Inicio', to: '/' },
             { label: 'El Evento', href: '/#evento' },
-            { label: 'Categorías', href: '/#categorias' },
+            { label: 'Costos', href: '/#costos' },
+            { label: 'Hotel', href: '/#hotel' },
           ].map((item) =>
             item.to ? (
               <Link
@@ -65,7 +66,7 @@ export default function Navbar() {
             to="/status"
             className="text-gray-400 hover:text-white transition-colors duration-300 text-sm font-medium tracking-wide"
           >
-            Mi Registro
+            Consultar Registro
           </Link>
           <Link
             to="/formulario"
@@ -110,8 +111,9 @@ export default function Navbar() {
             <div className="px-6 py-6 flex flex-col gap-4">
               <Link to="/" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Inicio</Link>
               <a href="/#evento" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>El Evento</a>
-              <a href="/#categorias" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Categorías</a>
-              <Link to="/status" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Mi Registro</Link>
+              <a href="/#costos" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Costos</a>
+              <a href="/#hotel" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Hotel</a>
+              <Link to="/status" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Consultar Registro</Link>
               <Link
                 to="/formulario"
                 onClick={() => setMenuOpen(false)}
