@@ -141,7 +141,7 @@ export default function StatusCheck() {
               />
               <motion.button whileHover={{ scale: loading ? 1 : 1.03 }} whileTap={{ scale: loading ? 1 : 0.97 }}
                 type="submit" disabled={loading || codigo.length !== 8}
-                className="px-6 py-3 bg-[#0066CC] hover:bg-[#0052a3] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,102,204,0.4)] text-sm flex items-center gap-2">
+                className="flex-shrink-0 px-4 sm:px-6 py-3 bg-[#0066CC] hover:bg-[#0052a3] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,102,204,0.4)] text-sm flex items-center gap-2">
                 {loading ? (
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -179,7 +179,7 @@ export default function StatusCheck() {
           {notFound && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.4 }}
-              className="bg-white/[0.03] border border-white/[0.07] rounded-3xl p-8 text-center">
+              className="bg-white/[0.03] border border-white/[0.07] rounded-3xl p-5 sm:p-8 text-center">
               <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-white/[0.05] flex items-center justify-center">
                 <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -202,9 +202,9 @@ export default function StatusCheck() {
               exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
 
               {/* Card de estado */}
-              <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-8 mb-5">
-                <div className="flex items-start gap-5 mb-6">
-                  <div className={`w-20 h-20 rounded-2xl border-2 flex items-center justify-center flex-shrink-0 ${ui.iconBg}`}>
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-5 sm:p-8 mb-5">
+                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 mb-6">
+                  <div className={`w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-2 flex items-center justify-center flex-shrink-0 ${ui.iconBg}`}>
                     {ui.icon}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -232,9 +232,9 @@ export default function StatusCheck() {
                       { label: 'Motocicleta',      value: registro.moto },
                       { label: 'Fecha de Registro',value: formatFecha(registro.created_at) },
                     ].map(({ label, value }) => (
-                      <div key={label} className="flex justify-between items-start gap-4 text-sm">
-                        <span className="text-gray-500 flex-shrink-0">{label}</span>
-                        <span className={`text-right font-medium ${label === 'Código' ? 'text-[#0066CC] font-mono tracking-widest' : 'text-gray-200'}`}>
+                      <div key={label} className="flex justify-between items-start gap-3 text-sm">
+                        <span className="text-gray-500 flex-shrink-0 text-xs sm:text-sm">{label}</span>
+                        <span className={`text-right font-medium break-all text-xs sm:text-sm ${label === 'Código' ? 'text-[#0066CC] font-mono tracking-widest' : 'text-gray-200'}`}>
                           {value || '—'}
                         </span>
                       </div>
