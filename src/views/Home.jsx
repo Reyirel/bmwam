@@ -265,8 +265,14 @@ export default function Home() {
                 src={BMW_VIDEO_SRC}
                 allow="autoplay; encrypted-media"
                 allowFullScreen={false}
-                className="w-full h-full"
-                style={{ border: 'none', pointerEvents: 'none' }}
+                className="absolute w-full"
+                style={{
+                  border: 'none',
+                  pointerEvents: 'none',
+                  top: '-60px',
+                  left: 0,
+                  height: 'calc(100% + 120px)',
+                }}
                 title="BMW AM video"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
