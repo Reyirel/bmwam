@@ -3,22 +3,44 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { uploadComprobante, insertRegistro, generateUniqueCodigo } from '../lib/firebase';
 import { generateRegistroPDF } from '../lib/pdf';
 
-const JERSEY_SIZES = ['CH', 'M', 'L', 'XL', 'XXL'];
+const JERSEY_SIZES  = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+const PULSERA_SIZES = ['S', 'M', 'L', '2XL', '3XL'];
+const GENEROS       = ['Hombre', 'Mujer'];
+const PRECIO_SOCIO   = 2400;
+const PRECIO_GENERAL = 2600;
 const IS_DEV = import.meta.env.DEV;
 
-// TODO: reemplazar con datos reales del banco
 const PAYMENT_INFO = {
-  banco: 'BBVA',
+  banco:   'BBVA',
   titular: 'BMW AM Ixmiquilpan',
-  cuenta: '1234 5678 9012 3456',
-  clabe: '012 345 678 901 234 567',
-  concepto: 'Registro Gran Competencia BMWAM 2026',
+  cuenta:  '1234 5678 9012 3456',
+  clabe:   '012 345 678 901 234 567',
 };
 
 const REQUIRED_FIELDS = [
-  'nombre', 'email', 'telefono', 'tallaJersey', 'nombreJersey',
-  'emergenciaNombre', 'emergenciaTelefono', 'procedencia', 'moto',
+  'nombre', 'email', 'telefono', 'procedencia', 'moto',
+  'generoJersey', 'tallaJersey', 'nombreJersey', 'tallaPulsera',
+  'emergenciaNombre', 'emergenciaTelefono',
 ];
+
+const PARTICIPANTE_REQUIRED = [
+  'nombre', 'email', 'telefono', 'procedencia', 'moto',
+  'generoJersey', 'tallaJersey', 'nombreJersey', 'tallaPulsera',
+];
+
+const EMPTY_PARTICIPANTE = {
+  nombre: '', email: '', telefono: '', procedencia: '', moto: '',
+  generoJersey: '', tallaJersey: '', nombreJersey: '', tallaPulsera: '',
+  esSocio: false,
+};
+
+function generateRifaId() {
+  return String(Math.floor(1000 + Math.random() * 9000));
+}
+
+function precioParticipante(p) {
+  return p.esSocio ? PRECIO_SOCIO : PRECIO_GENERAL;
+}
 
 /* ─── Helpers de UI ───────────────────────────────────────────── */
 function inputCls(error) {
@@ -52,23 +74,39 @@ function Field({ label, required, hint, error, children }) {
   );
 }
 
-function Card({ title, children }) {
+function Card({ title, onRemove, children }) {
   return (
     <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-6 md:p-8 space-y-6">
-      {title && (
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.25em] pb-3 border-b border-white/[0.06]">
-          {title}
-        </h3>
+      {(title || onRemove) && (
+        <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+          {title && (
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.25em]">
+              {title}
+            </h3>
+          )}
+          {onRemove && (
+            <button
+              type="button"
+              onClick={onRemove}
+              className="text-gray-600 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-500/10"
+              aria-label="Eliminar participante"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       )}
       {children}
     </div>
   );
 }
 
-function SizePicker({ value, onChange, error }) {
+function SizePicker({ sizes, value, onChange, error }) {
   return (
     <div className="flex gap-2.5 flex-wrap">
-      {JERSEY_SIZES.map((s) => (
+      {sizes.map((s) => (
         <button
           key={s}
           type="button"
@@ -80,6 +118,27 @@ function SizePicker({ value, onChange, error }) {
           }`}
         >
           {s}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function GenderPicker({ value, onChange, error }) {
+  return (
+    <div className="flex gap-3">
+      {GENEROS.map((g) => (
+        <button
+          key={g}
+          type="button"
+          onClick={() => onChange(g)}
+          className={`flex-1 py-3 rounded-xl text-sm font-semibold border transition-all duration-200 ${
+            value === g
+              ? 'bg-[#0066CC] border-[#0066CC] text-white shadow-[0_0_16px_rgba(0,102,204,0.4)]'
+              : `bg-white/[0.04] text-gray-400 hover:text-white hover:border-white/30 ${error ? 'border-red-500/40' : 'border-white/10'}`
+          }`}
+        >
+          {g}
         </button>
       ))}
     </div>
@@ -125,6 +184,125 @@ function StepBar({ current }) {
   );
 }
 
+/* ─── Bloque de campos reutilizable por participante ─────────── */
+function ParticipantFields({ data, errors, onField }) {
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    if (name === 'nombreJersey' && value.length > 8) return;
+    onField(name, value);
+  };
+
+  return (
+    <>
+      <Field label="Nombre completo" required error={errors.nombre}>
+        <input name="nombre" value={data.nombre} onChange={handleInput}
+          placeholder="Ej. Juan García López" className={inputCls(errors.nombre)} />
+      </Field>
+
+      <Field label="Email" required error={errors.email}>
+        <input name="email" type="email" value={data.email} onChange={handleInput}
+          placeholder="correo@ejemplo.com" className={inputCls(errors.email)} />
+      </Field>
+
+      <Field label="Número de teléfono con WhatsApp" required error={errors.telefono}>
+        <input name="telefono" type="tel" value={data.telefono} onChange={handleInput}
+          placeholder="+52 55 1234 5678" className={inputCls(errors.telefono)} />
+      </Field>
+
+      <Field label="Ciudad de procedencia" required error={errors.procedencia}>
+        <input name="procedencia" value={data.procedencia} onChange={handleInput}
+          placeholder="Ej. Ciudad de México, CDMX" className={inputCls(errors.procedencia)} />
+      </Field>
+
+      <Field label="Modelo, color y placas de motocicleta" required error={errors.moto}>
+        <input name="moto" value={data.moto} onChange={handleInput}
+          placeholder="Ej. BMW R1250GS, Azul, ABC-123-D" className={inputCls(errors.moto)} />
+      </Field>
+
+      <Field
+        label="Talla de Jersey"
+        required
+        error={errors.generoJersey || errors.tallaJersey}
+      >
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500">Selecciona género y talla</span>
+            {/* TODO: conectar con modal o imagen de guía de tallas */}
+            <button
+              type="button"
+              className="text-xs text-[#0066CC] hover:text-[#4d9fff] transition-colors underline underline-offset-2"
+            >
+              Ver guía de tallas
+            </button>
+          </div>
+          <GenderPicker
+            value={data.generoJersey}
+            onChange={(v) => onField('generoJersey', v)}
+            error={errors.generoJersey}
+          />
+          <SizePicker
+            sizes={JERSEY_SIZES}
+            value={data.tallaJersey}
+            onChange={(v) => onField('tallaJersey', v)}
+            error={errors.tallaJersey}
+          />
+        </div>
+      </Field>
+
+      <Field label="Nombre en Jersey" required hint="Máx. 8 caracteres" error={errors.nombreJersey}>
+        <div className="relative">
+          <input name="nombreJersey" value={data.nombreJersey} onChange={handleInput}
+            placeholder="Ej. JUAN" maxLength={8}
+            className={`${inputCls(errors.nombreJersey)} pr-14 uppercase`} />
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-600 tabular-nums">
+            {data.nombreJersey.length}/8
+          </span>
+        </div>
+      </Field>
+
+      <Field label="Talla de Pulsera" required error={errors.tallaPulsera}>
+        <SizePicker
+          sizes={PULSERA_SIZES}
+          value={data.tallaPulsera}
+          onChange={(v) => onField('tallaPulsera', v)}
+          error={errors.tallaPulsera}
+        />
+      </Field>
+
+      {/* ── Membresía / Precio ── */}
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => onField('esSocio', !data.esSocio)}
+        onKeyDown={(e) => e.key === ' ' || e.key === 'Enter' ? onField('esSocio', !data.esSocio) : null}
+        className="flex items-center gap-3 p-4 rounded-2xl border border-white/[0.08] hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.04] cursor-pointer transition-all duration-200 select-none"
+      >
+        <div className={`w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-all duration-200 ${
+          data.esSocio ? 'bg-[#0066CC] border-[#0066CC]' : 'bg-transparent border-white/25'
+        }`}>
+          {data.esSocio && (
+            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-gray-200">Soy socio BMW AM</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {data.esSocio ? 'Tarifa especial para socios' : 'Tarifa general para no socios'}
+          </p>
+        </div>
+        <div className="text-right flex-shrink-0">
+          <p className="text-[#0066CC] font-black text-lg tabular-nums">
+            ${data.esSocio ? '2,400' : '2,600'}
+          </p>
+          <p className="text-gray-600 text-[10px] uppercase tracking-wide">MXN</p>
+        </div>
+      </div>
+    </>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════
    MAIN COMPONENT
 ═══════════════════════════════════════════════════════════════ */
@@ -136,25 +314,27 @@ export default function Formulario() {
   const [submitError, setSubmitError] = useState('');
   const [registroGuardado, setRegistroGuardado] = useState(null);
 
+  /* ─── Participante principal ─── */
   const [form, setForm] = useState({
-    nombre: '',
-    email: '',
-    telefono: '',
-    tallaJersey: '',
-    nombreJersey: '',
-    emergenciaNombre: '',
-    emergenciaTelefono: '',
-    procedencia: '',
-    moto: '',
-    acompNombre: '',
-    acompTalla: '',
+    nombre: '', email: '', telefono: '', procedencia: '', moto: '',
+    generoJersey: '', tallaJersey: '', nombreJersey: '', tallaPulsera: '',
+    esSocio: false,
+    emergenciaNombre: '', emergenciaTelefono: '',
     notas: '',
   });
 
+  /* ─── Participantes adicionales ─── */
+  const [participantes, setParticipantes] = useState([]);
+  const [participanteErrors, setParticipanteErrors] = useState([]);
+
+  /* ─── Helpers ─── */
+  const allParticipants = [form, ...participantes];
+  const total = allParticipants.reduce((sum, p) => sum + precioParticipante(p), 0);
+
+  /* ─── Handlers participante principal ─── */
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'nombreJersey' && value.length > 8) return;
-    if (name === 'acompNombre'  && value.length > 8) return;
     setForm((p) => ({ ...p, [name]: value }));
     if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }));
   };
@@ -164,22 +344,61 @@ export default function Formulario() {
     if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }));
   };
 
+  /* ─── Handlers participantes adicionales ─── */
+  const addParticipante = () => {
+    setParticipantes((p) => [...p, { ...EMPTY_PARTICIPANTE }]);
+    setParticipanteErrors((p) => [...p, {}]);
+  };
+
+  const removeParticipante = (idx) => {
+    setParticipantes((p) => p.filter((_, i) => i !== idx));
+    setParticipanteErrors((p) => p.filter((_, i) => i !== idx));
+  };
+
+  const updateParticipante = (idx, name, value) => {
+    setParticipantes((prev) =>
+      prev.map((p, i) => (i === idx ? { ...p, [name]: value } : p))
+    );
+    setParticipanteErrors((prev) => {
+      const updated = [...prev];
+      if (updated[idx]?.[name]) updated[idx] = { ...updated[idx], [name]: '' };
+      return updated;
+    });
+  };
+
   const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
   /* ─── Step 1 validation ─── */
   const handleStep1 = (e) => {
     e.preventDefault();
     const newErrors = {};
+
     REQUIRED_FIELDS.forEach((f) => {
       if (!form[f]?.trim()) newErrors[f] = 'Este campo es requerido';
     });
     if (form.email && !/\S+@\S+\.\S+/.test(form.email)) {
       newErrors.email = 'Ingresa un email válido';
     }
-    if (Object.keys(newErrors).length) {
+
+    const newPartErrors = participantes.map((p) => {
+      const errs = {};
+      PARTICIPANTE_REQUIRED.forEach((f) => {
+        if (!p[f]?.trim()) errs[f] = 'Este campo es requerido';
+      });
+      if (p.email && !/\S+@\S+\.\S+/.test(p.email)) {
+        errs.email = 'Ingresa un email válido';
+      }
+      return errs;
+    });
+
+    const hasPartErrors = newPartErrors.some((e) => Object.keys(e).length > 0);
+
+    if (Object.keys(newErrors).length || hasPartErrors) {
       setErrors(newErrors);
+      setParticipanteErrors(newPartErrors);
       return;
     }
+
     setStep(2);
     scrollTop();
   };
@@ -196,37 +415,53 @@ export default function Formulario() {
     setSubmitError('');
 
     try {
-      // generamos e intentamos crear el registro; si hay colisión volvemos a intentar
       let row;
       for (let intento = 0; intento < 5; intento++) {
         const codigo = await generateUniqueCodigo();
 
-        // 1) Upload comprobante (omitido en dev si no se seleccionó archivo)
         const comprovanteUrl = comprobante
           ? await uploadComprobante(comprobante, codigo)
           : null;
 
-        // 2) Insert registro
         try {
           row = await insertRegistro({
             codigo,
             nombre:               form.nombre,
             email:                form.email,
             telefono:             form.telefono,
-            talla_jersey:         form.tallaJersey,
-            nombre_jersey:        form.nombreJersey.toUpperCase(),
-            emergencia_nombre:    form.emergenciaNombre,
-            emergencia_telefono:  form.emergenciaTelefono,
             procedencia:          form.procedencia,
             moto:                 form.moto,
-            acomp_nombre:         form.acompNombre  ? form.acompNombre.toUpperCase()  : null,
-            acomp_talla:          form.acompTalla   || null,
-            notas:                form.notas        || null,
-            comprobante_url:      comprovanteUrl,
+            genero_jersey:        form.generoJersey,
+            talla_jersey:         form.tallaJersey,
+            nombre_jersey:        form.nombreJersey.toUpperCase(),
+            talla_pulsera:        form.tallaPulsera,
+            es_socio:             form.esSocio,
+            precio:               precioParticipante(form),
+            rifa_id:              generateRifaId(),
+            emergencia_nombre:    form.emergenciaNombre,
+            emergencia_telefono:  form.emergenciaTelefono,
+            notas:                form.notas || null,
+            total_pago:           total,
+            participantes_extra:  participantes.length > 0
+              ? participantes.map((p) => ({
+                  nombre:        p.nombre,
+                  email:         p.email,
+                  telefono:      p.telefono,
+                  procedencia:   p.procedencia,
+                  moto:          p.moto,
+                  genero_jersey: p.generoJersey,
+                  talla_jersey:  p.tallaJersey,
+                  nombre_jersey: p.nombreJersey.toUpperCase(),
+                  talla_pulsera: p.tallaPulsera,
+                  es_socio:      p.esSocio,
+                  precio:        precioParticipante(p),
+                  rifa_id:       generateRifaId(),
+                }))
+              : null,
+            comprobante_url: comprovanteUrl,
           });
-          break; // si insertRegistro tuvo éxito salimos del loop
+          break;
         } catch (err) {
-          // si el error es por código duplicado, intentamos de nuevo
           if (err.message && err.message.includes('código ya existe')) {
             console.warn('Colisión de código, reintentando generación');
             continue;
@@ -314,40 +549,56 @@ export default function Formulario() {
               className="space-y-6"
               noValidate
             >
+              {/* ── Participante principal ── */}
               <Card>
-                <Field label="Nombre completo" required error={errors.nombre}>
-                  <input name="nombre" value={form.nombre} onChange={handleChange}
-                    placeholder="Ej. Juan García López" className={inputCls(errors.nombre)} />
-                </Field>
-
-                <Field label="Email" required error={errors.email}>
-                  <input name="email" type="email" value={form.email} onChange={handleChange}
-                    placeholder="correo@ejemplo.com" className={inputCls(errors.email)} />
-                </Field>
-
-                <Field label="Número de teléfono con Whatsapp" required error={errors.telefono}>
-                  <input name="telefono" type="tel" value={form.telefono} onChange={handleChange}
-                    placeholder="+52 55 1234 5678" className={inputCls(errors.telefono)} />
-                </Field>
-
-                <Field label="Talla de Jersey" required error={errors.tallaJersey}>
-                  <SizePicker value={form.tallaJersey} onChange={(v) => setField('tallaJersey', v)} error={errors.tallaJersey} />
-                </Field>
-
-                <Field label="Nombre Jersey Personalizado" required hint="Máx. 8 caracteres" error={errors.nombreJersey}>
-                  <div className="relative">
-                    <input name="nombreJersey" value={form.nombreJersey} onChange={handleChange}
-                      placeholder="Ej. JUAN" maxLength={8}
-                      className={`${inputCls(errors.nombreJersey)} pr-14 uppercase`} />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-600 tabular-nums">
-                      {form.nombreJersey.length}/8
-                    </span>
-                  </div>
-                </Field>
+                <ParticipantFields
+                  data={form}
+                  errors={errors}
+                  onField={setField}
+                />
               </Card>
 
+              {/* ── Participantes adicionales ── */}
+              <AnimatePresence>
+                {participantes.map((p, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -16 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Card
+                      title={`Participante ${idx + 2}`}
+                      onRemove={() => removeParticipante(idx)}
+                    >
+                      <ParticipantFields
+                        data={p}
+                        errors={participanteErrors[idx] || {}}
+                        onField={(name, value) => updateParticipante(idx, name, value)}
+                      />
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              {/* ── Botón agregar participante ── */}
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={addParticipante}
+                className="w-full py-4 border-2 border-dashed border-white/15 hover:border-[#0066CC]/50 text-gray-500 hover:text-[#0066CC] font-semibold rounded-2xl transition-all duration-300 text-sm flex items-center justify-center gap-2 hover:bg-[#0066CC]/[0.04]"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Agregar participante
+              </motion.button>
+
+              {/* ── Contacto de Emergencia ── */}
               <Card title="Contacto de Emergencia">
-                <Field label="Nombre de contacto" required error={errors.emergenciaNombre}>
+                <Field label="Nombre del contacto" required error={errors.emergenciaNombre}>
                   <input name="emergenciaNombre" value={form.emergenciaNombre} onChange={handleChange}
                     placeholder="Nombre completo" className={inputCls(errors.emergenciaNombre)} />
                 </Field>
@@ -355,43 +606,6 @@ export default function Formulario() {
                 <Field label="Número de teléfono de contacto" required error={errors.emergenciaTelefono}>
                   <input name="emergenciaTelefono" type="tel" value={form.emergenciaTelefono} onChange={handleChange}
                     placeholder="+52 55 1234 5678" className={inputCls(errors.emergenciaTelefono)} />
-                </Field>
-              </Card>
-
-              <Card title="Datos del Participante">
-                <Field label="¿Desde dónde vienes?" required error={errors.procedencia}>
-                  <input name="procedencia" value={form.procedencia} onChange={handleChange}
-                    placeholder="Ej. Ciudad de México, CDMX" className={inputCls(errors.procedencia)} />
-                </Field>
-
-                <Field label="Modelo, Color y Placas de Motocicleta" required error={errors.moto}>
-                  <input name="moto" value={form.moto} onChange={handleChange}
-                    placeholder="Ej. BMW R1250GS, Azul, ABC-123-D" className={inputCls(errors.moto)} />
-                </Field>
-              </Card>
-
-              <Card title="Acompañante (Opcional)">
-                <Field label="Nombre personalizado del acompañante en Jersey" hint="Máx. 8 caracteres">
-                  <div className="relative">
-                    <input name="acompNombre" value={form.acompNombre} onChange={handleChange}
-                      placeholder="Ej. MARIA" maxLength={8}
-                      className={`${inputCls()} pr-14 uppercase`} />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-600 tabular-nums">
-                      {form.acompNombre.length}/8
-                    </span>
-                  </div>
-                </Field>
-
-                <Field label="Talla de Jersey del acompañante">
-                  <SizePicker value={form.acompTalla} onChange={(v) => setField('acompTalla', v)} />
-                </Field>
-              </Card>
-
-              <Card>
-                <Field label="Notas adicionales">
-                  <textarea name="notas" value={form.notas} onChange={handleChange}
-                    placeholder="¿Hay algo más que debamos saber?" rows={4}
-                    className={`${inputCls()} resize-none`} />
                 </Field>
               </Card>
 
@@ -413,6 +627,56 @@ export default function Formulario() {
             <motion.div key="step2" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.4 }}>
 
+              {/* ── Resumen de pago ── */}
+              <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-8 mb-6">
+                <h3 className="text-base font-bold mb-5">Resumen de Pago</h3>
+                <div className="space-y-3">
+                  {/* Main participant */}
+                  <div className="flex justify-between items-center text-sm gap-4">
+                    <div>
+                      <span className="text-gray-300 font-medium">{form.nombre || 'Participante 1'}</span>
+                      <span className={`ml-2 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        form.esSocio
+                          ? 'bg-[#0066CC]/20 text-[#6aadff]'
+                          : 'bg-white/[0.06] text-gray-500'
+                      }`}>
+                        {form.esSocio ? 'Socio' : 'General'}
+                      </span>
+                    </div>
+                    <span className="text-white font-semibold tabular-nums flex-shrink-0">
+                      ${precioParticipante(form).toLocaleString('es-MX')} MXN
+                    </span>
+                  </div>
+
+                  {/* Additional participants */}
+                  {participantes.map((p, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-sm gap-4">
+                      <div>
+                        <span className="text-gray-300 font-medium">{p.nombre || `Participante ${idx + 2}`}</span>
+                        <span className={`ml-2 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                          p.esSocio
+                            ? 'bg-[#0066CC]/20 text-[#6aadff]'
+                            : 'bg-white/[0.06] text-gray-500'
+                        }`}>
+                          {p.esSocio ? 'Socio' : 'General'}
+                        </span>
+                      </div>
+                      <span className="text-white font-semibold tabular-nums flex-shrink-0">
+                        ${precioParticipante(p).toLocaleString('es-MX')} MXN
+                      </span>
+                    </div>
+                  ))}
+
+                  {/* Total */}
+                  <div className="border-t border-white/10 pt-4 flex justify-between items-center">
+                    <span className="text-white font-bold">Total a pagar</span>
+                    <span className="text-2xl font-black text-[#0066CC] tabular-nums">
+                      ${total.toLocaleString('es-MX')} MXN
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               {/* Datos bancarios */}
               <div className="bg-white/[0.04] border border-white/10 rounded-3xl p-8 mb-6">
                 <div className="flex items-center gap-4 mb-6">
@@ -429,15 +693,18 @@ export default function Formulario() {
 
                 <div className="divide-y divide-white/[0.06]">
                   {[
-                    { label: 'Banco',                value: PAYMENT_INFO.banco },
-                    { label: 'Titular',              value: PAYMENT_INFO.titular },
-                    { label: 'Número de Cuenta',     value: PAYMENT_INFO.cuenta },
-                    { label: 'CLABE Interbancaria',  value: PAYMENT_INFO.clabe },
-                    { label: 'Concepto de Pago',     value: PAYMENT_INFO.concepto },
+                    { label: 'Banco',               value: PAYMENT_INFO.banco },
+                    { label: 'Titular',             value: PAYMENT_INFO.titular },
+                    { label: 'Número de Cuenta',    value: PAYMENT_INFO.cuenta },
+                    { label: 'CLABE Interbancaria', value: PAYMENT_INFO.clabe },
+                    { label: 'Concepto de Pago',    value: `Registro BMWAM 2026 - ${form.nombre}` },
+                    { label: 'Total',               value: `$${total.toLocaleString('es-MX')} MXN` },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex justify-between items-center py-3.5 gap-4">
                       <span className="text-gray-500 text-sm flex-shrink-0">{label}</span>
-                      <span className="text-white text-sm font-semibold text-right">{value}</span>
+                      <span className={`text-sm font-semibold text-right ${label === 'Total' ? 'text-[#0066CC]' : 'text-white'}`}>
+                        {value}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -578,7 +845,7 @@ export default function Formulario() {
                   </p>
 
                   {/* Código de registro */}
-                  <div className="bg-[#0066CC]/[0.08] border border-[#0066CC]/25 rounded-2xl p-6 mb-8">
+                  <div className="bg-[#0066CC]/[0.08] border border-[#0066CC]/25 rounded-2xl p-6 mb-6">
                     <p className="text-gray-500 text-xs uppercase tracking-widest font-medium mb-2">Tu código de registro</p>
                     <p className="text-4xl font-black text-[#0066CC] tracking-[0.2em] mb-2">
                       {registroGuardado.codigo}
@@ -589,6 +856,28 @@ export default function Formulario() {
                     </p>
                   </div>
 
+                  {/* ID de Rifa */}
+                  <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5 mb-8">
+                    <p className="text-gray-600 text-[10px] uppercase tracking-[0.25em] font-semibold mb-3">
+                      ID de Rifa
+                    </p>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-400">{registroGuardado.nombre}</span>
+                        <span className="font-black text-white tracking-widest text-lg">#{registroGuardado.rifa_id}</span>
+                      </div>
+                      {registroGuardado.participantes_extra?.map((p, i) => (
+                        <div key={i} className="flex justify-between items-center text-sm">
+                          <span className="text-gray-400">{p.nombre}</span>
+                          <span className="font-black text-white tracking-widest text-lg">#{p.rifa_id}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-gray-600 text-xs mt-3 leading-relaxed">
+                      Conserva tu número de rifa para el sorteo del evento.
+                    </p>
+                  </div>
+
                   {/* Resumen */}
                   <div className="bg-[#080810] rounded-2xl p-6 text-left border border-white/[0.06] mb-8">
                     <p className="text-gray-600 text-[10px] uppercase tracking-[0.25em] font-semibold mb-4">Resumen del registro</p>
@@ -596,14 +885,19 @@ export default function Formulario() {
                       {[
                         { label: 'Participante',    value: registroGuardado.nombre },
                         { label: 'Email',            value: registroGuardado.email },
+                        { label: 'Membresía',        value: registroGuardado.es_socio ? 'Socio BMW AM' : 'General' },
+                        { label: 'Género Jersey',    value: registroGuardado.genero_jersey },
                         { label: 'Talla Jersey',     value: registroGuardado.talla_jersey },
                         { label: 'Nombre en Jersey', value: registroGuardado.nombre_jersey },
+                        { label: 'Talla Pulsera',    value: registroGuardado.talla_pulsera },
                         { label: 'Motocicleta',      value: registroGuardado.moto },
-                        ...(registroGuardado.acomp_nombre ? [{ label: 'Jersey Acompañante', value: registroGuardado.acomp_nombre }] : []),
+                        { label: 'Total pagado',     value: `$${registroGuardado.total_pago?.toLocaleString('es-MX')} MXN` },
                       ].map(({ label, value }) => (
                         <div key={label} className="flex justify-between items-center text-sm gap-4">
                           <span className="text-gray-500">{label}</span>
-                          <span className="text-white font-medium text-right">{value}</span>
+                          <span className={`font-medium text-right ${label === 'Total pagado' ? 'text-[#0066CC]' : 'text-white'}`}>
+                            {value}
+                          </span>
                         </div>
                       ))}
                     </div>

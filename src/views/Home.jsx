@@ -155,7 +155,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap"
           >
             <Link
               to="/formulario"
@@ -168,6 +168,12 @@ export default function Home() {
               className="px-8 py-4 border border-white/20 hover:border-white/60 text-white font-medium rounded-full transition-all duration-300 hover:bg-white/[0.06] backdrop-blur-sm text-sm tracking-wide"
             >
               Conocer el Evento
+            </a>
+            <a
+              href="#hotel"
+              className="px-8 py-4 border border-white/20 hover:border-white/60 text-white font-medium rounded-full transition-all duration-300 hover:bg-white/[0.06] backdrop-blur-sm text-sm tracking-wide"
+            >
+              Reserva tu Hotel
             </a>
           </motion.div>
         </motion.div>
@@ -557,53 +563,25 @@ export default function Home() {
             </div>
           </FadeUp>
 
-          {/* Bank info + Discount code */}
-          <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
-
-            {/* Bank transfer */}
-            <FadeUp delay={0.2}>
-              <div className="h-full bg-white/[0.03] border border-white/[0.07] rounded-2xl p-5 sm:p-8">
-                <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase mb-6">
-                  Datos para depósito / transferencia
-                </p>
-                <div className="space-y-4">
-                  {[
-                    { label: 'Razón social', value: 'OPERADORA TURÍSTICA TEPHÉ S. DE R.L. DE C.V.' },
-                    { label: 'Banco', value: 'BBVA (Bancomer)' },
-                    { label: 'Sucursal', value: '5599' },
-                    { label: 'Cuenta', value: '0198466106' },
-                    { label: 'CLABE interbancaria', value: '012298001984661063' },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="flex flex-col gap-0.5">
-                      <span className="text-gray-600 text-[10px] uppercase tracking-[0.2em] font-medium">{label}</span>
-                      <span className="text-white text-sm font-medium tabular-nums">{value}</span>
-                    </div>
-                  ))}
+          {/* Discount code */}
+          <FadeUp delay={0.2}>
+            <div className="max-w-md mx-auto bg-[#0066CC]/[0.07] border border-[#0066CC]/30 rounded-2xl p-5 sm:p-8 flex flex-col justify-center text-center">
+              <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase mb-6">
+                Código de descuento exclusivo
+              </p>
+              <div className="mb-4">
+                <div className="inline-block bg-[#050505] border-2 border-dashed border-[#0066CC]/50 rounded-2xl px-6 sm:px-10 py-4 sm:py-5">
+                  <span className="text-2xl sm:text-4xl font-black text-white tracking-widest">AMBMW2026</span>
                 </div>
               </div>
-            </FadeUp>
-
-            {/* Discount code */}
-            <FadeUp delay={0.25}>
-              <div className="h-full bg-[#0066CC]/[0.07] border border-[#0066CC]/30 rounded-2xl p-5 sm:p-8 flex flex-col justify-center text-center">
-                <p className="text-[#0066CC] text-xs font-semibold tracking-[0.35em] uppercase mb-6">
-                  Código de descuento exclusivo
-                </p>
-                <div className="mb-4">
-                  <div className="inline-block bg-[#050505] border-2 border-dashed border-[#0066CC]/50 rounded-2xl px-6 sm:px-10 py-4 sm:py-5">
-                    <span className="text-2xl sm:text-4xl font-black text-white tracking-widest">AMBMW2026</span>
-                  </div>
-                </div>
-                <div className="inline-flex items-center justify-center gap-2 mx-auto bg-[#0066CC] text-white text-sm font-bold rounded-full px-6 py-2 mb-6">
-                  25% de descuento
-                </div>
-                <p className="text-gray-400 text-xs leading-relaxed font-light">
-                  Menciona este código al momento de realizar tu reservación para que el descuento sea aplicado.
-                </p>
+              <div className="inline-flex items-center justify-center gap-2 mx-auto bg-[#0066CC] text-white text-sm font-bold rounded-full px-6 py-2 mb-6">
+                25% de descuento
               </div>
-            </FadeUp>
-
-          </div>
+              <p className="text-gray-400 text-xs leading-relaxed font-light">
+                Menciona este código al momento de realizar tu reservación para que el descuento sea aplicado.
+              </p>
+            </div>
+          </FadeUp>
         </div>
       </section>
 
