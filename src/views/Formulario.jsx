@@ -12,9 +12,9 @@ const IS_DEV = import.meta.env.DEV;
 
 const PAYMENT_INFO = {
   banco:   'BBVA',
-  titular: 'BMW AM Ixmiquilpan',
-  cuenta:  '1234 5678 9012 3456',
-  clabe:   '012 345 678 901 234 567',
+  titular: 'MARCO ANTONIO ALDANA GARCÍA',
+  cuenta:  '4152 3145 8104 6524',
+  clabe:   '012298015666093673',
 };
 
 const REQUIRED_FIELDS = [

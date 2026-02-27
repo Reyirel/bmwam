@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView, animate } from 'framer-motion';
 import heroImage from '../assets/herosetionimage.png';
-import bmwVideo from '../assets/bmwvideo.mp4'
+const BMW_VIDEO_SRC = 'https://www.youtube.com/embed/lSJ19gQq-0Q?autoplay=1&mute=1&loop=1&controls=0&playlist=lSJ19gQq-0Q&modestbranding=1&rel=0&showinfo=0'
 import imagen3 from '../assets/imagen3.jpg'
 import logo from '../assets/logo.png'
 
@@ -261,13 +261,13 @@ export default function Home() {
             className="relative"
           >
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3]">
-              <video
-                src={bmwVideo}
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="w-full h-full object-cover"
+              <iframe
+                src={BMW_VIDEO_SRC}
+                allow="autoplay; encrypted-media"
+                allowFullScreen={false}
+                className="w-full h-full"
+                style={{ border: 'none', pointerEvents: 'none' }}
+                title="BMW AM video"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
               {/* Badge */}
