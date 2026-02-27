@@ -515,8 +515,9 @@ export default function Home() {
           </FadeUp>
 
           {/* Room table */}
-          <FadeUp delay={0.15} className="mb-12 -mx-4 sm:mx-0 overflow-x-auto">
-            <div className="rounded-none sm:rounded-2xl border-y sm:border border-white/[0.07] overflow-hidden">
+          <FadeUp delay={0.15} className="mb-12">
+            <div className="-mx-4 sm:mx-0 overflow-x-auto">
+            <div className="rounded-none sm:rounded-2xl border-y sm:border border-white/[0.07]">
               <table className="w-full text-sm min-w-[480px]">
                 <thead>
                   <tr className="bg-white/[0.04] border-b border-white/[0.07]">
@@ -546,6 +547,7 @@ export default function Home() {
                   ))}
                 </tbody>
               </table>
+            </div>
             </div>
           </FadeUp>
 
