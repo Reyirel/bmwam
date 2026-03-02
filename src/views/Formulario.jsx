@@ -19,18 +19,18 @@ const PAYMENT_INFO = {
 
 const REQUIRED_FIELDS = [
   'nombre', 'email', 'telefono', 'procedencia', 'moto',
-  'generoJersey', 'tallaJersey', 'nombreJersey', 'tallaPulsera',
+  'generoJersey', 'tallaJersey', 'tallaPulsera',
   'emergenciaNombre', 'emergenciaTelefono',
 ];
 
 const PARTICIPANTE_REQUIRED = [
   'nombre', 'email', 'telefono', 'procedencia', 'moto',
-  'generoJersey', 'tallaJersey', 'nombreJersey', 'tallaPulsera',
+  'generoJersey', 'tallaJersey', 'tallaPulsera',
 ];
 
 const EMPTY_PARTICIPANTE = {
   nombre: '', email: '', telefono: '', procedencia: '', moto: '',
-  generoJersey: '', tallaJersey: '', nombreJersey: '', tallaPulsera: '',
+  generoJersey: '', tallaJersey: '', tallaPulsera: '',
   esSocio: false,
 };
 
@@ -188,7 +188,6 @@ function StepBar({ current }) {
 function ParticipantFields({ data, errors, onField }) {
   const handleInput = (e) => {
     const { name, value } = e.target;
-    if (name === 'nombreJersey' && value.length > 8) return;
     onField(name, value);
   };
 
@@ -249,17 +248,6 @@ function ParticipantFields({ data, errors, onField }) {
         </div>
       </Field>
 
-      <Field label="Nombre en Jersey" required hint="Máx. 8 caracteres" error={errors.nombreJersey}>
-        <div className="relative">
-          <input name="nombreJersey" value={data.nombreJersey} onChange={handleInput}
-            placeholder="Ej. JUAN" maxLength={8}
-            className={`${inputCls(errors.nombreJersey)} pr-14 uppercase`} />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-600 tabular-nums">
-            {data.nombreJersey.length}/8
-          </span>
-        </div>
-      </Field>
-
       <Field label="Talla de Pulsera" required error={errors.tallaPulsera}>
         <SizePicker
           sizes={PULSERA_SIZES}
@@ -317,7 +305,7 @@ export default function Formulario() {
   /* ─── Participante principal ─── */
   const [form, setForm] = useState({
     nombre: '', email: '', telefono: '', procedencia: '', moto: '',
-    generoJersey: '', tallaJersey: '', nombreJersey: '', tallaPulsera: '',
+    generoJersey: '', tallaJersey: '', tallaPulsera: '',
     esSocio: false,
     emergenciaNombre: '', emergenciaTelefono: '',
     notas: '',
@@ -334,7 +322,6 @@ export default function Formulario() {
   /* ─── Handlers participante principal ─── */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'nombreJersey' && value.length > 8) return;
     setForm((p) => ({ ...p, [name]: value }));
     if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }));
   };
@@ -433,7 +420,6 @@ export default function Formulario() {
             moto:                 form.moto,
             genero_jersey:        form.generoJersey,
             talla_jersey:         form.tallaJersey,
-            nombre_jersey:        form.nombreJersey.toUpperCase(),
             talla_pulsera:        form.tallaPulsera,
             es_socio:             form.esSocio,
             precio:               precioParticipante(form),
@@ -451,7 +437,6 @@ export default function Formulario() {
                   moto:          p.moto,
                   genero_jersey: p.generoJersey,
                   talla_jersey:  p.tallaJersey,
-                  nombre_jersey: p.nombreJersey.toUpperCase(),
                   talla_pulsera: p.tallaPulsera,
                   es_socio:      p.esSocio,
                   precio:        precioParticipante(p),
@@ -888,7 +873,6 @@ export default function Formulario() {
                         { label: 'Membresía',        value: registroGuardado.es_socio ? 'Socio BMW AM' : 'General' },
                         { label: 'Género Jersey',    value: registroGuardado.genero_jersey },
                         { label: 'Talla Jersey',     value: registroGuardado.talla_jersey },
-                        { label: 'Nombre en Jersey', value: registroGuardado.nombre_jersey },
                         { label: 'Talla Pulsera',    value: registroGuardado.talla_pulsera },
                         { label: 'Motocicleta',      value: registroGuardado.moto },
                         { label: 'Total pagado',     value: `$${registroGuardado.total_pago?.toLocaleString('es-MX')} MXN` },

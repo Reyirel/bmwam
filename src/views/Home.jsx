@@ -46,23 +46,23 @@ function FadeUp({ children, delay = 0, className = '' }) {
 
 /* ─── Data ──────────────────────────────────────────────────────── */
 const STATS = [
-  { value: 3,   suffix: '',     label: 'Rutas Diseñadas' },
-  { value: 300, suffix: '+',   label: 'Cupos Disponibles' },
+  { value: 3, suffix: '', label: 'Rutas Diseñadas' },
+  { value: 300, suffix: '+', label: 'Cupos Disponibles' },
   { value: 120, suffix: ' km', label: 'Total de Recorrido' },
 ];
 
 const ROOMS = [
-  { type: 'Habitación estándar',          specs: '1 cama Queen Size',                              capacity: '2 pax', price: '$2,800' },
-  { type: 'Habitación estándar plus',     specs: '1 cama King Size',                               capacity: '2 pax', price: '$3,100' },
-  { type: 'Habitación premium',           specs: '1 cama King Size',                               capacity: '2 pax', price: '$3,600' },
-  { type: 'Habitación suite',             specs: '1 cama King Size',                               capacity: '2 pax', price: '$4,500' },
-  { type: 'Suite jacuzzi',                specs: '1 cama King Size · jacuzzi',                     capacity: '2 pax', price: '$5,200' },
-  { type: 'Estándar doble',               specs: '2 camas Queen Size',                             capacity: '4 pax', price: '$4,800' },
-  { type: 'Premium doble',                specs: '2 camas Queen Size',                             capacity: '4 pax', price: '$5,000' },
-  { type: 'Premium terraza',              specs: '2 camas Queen Size · terraza',                   capacity: '4 pax', price: '$5,300' },
-  { type: 'Estándar familiar',            specs: '—',                                              capacity: '8 pax', price: '$7,900' },
-  { type: 'Penthouse',                    specs: '3 recámaras · 3 camas King Size',                capacity: '6 pax', price: '$14,250' },
-  { type: 'Penthouse Plus',               specs: '3 recámaras · 3 camas King Size + 1 sofá cama', capacity: '8 pax', price: '$16,700' },
+  { type: 'Habitación estándar', specs: '1 cama Queen Size', capacity: '2 pax', price: '$2,800' },
+  { type: 'Habitación estándar plus', specs: '1 cama King Size', capacity: '2 pax', price: '$3,100' },
+  { type: 'Habitación premium', specs: '1 cama King Size', capacity: '2 pax', price: '$3,600' },
+  { type: 'Habitación suite', specs: '1 cama King Size', capacity: '2 pax', price: '$4,500' },
+  { type: 'Suite jacuzzi', specs: '1 cama King Size · jacuzzi', capacity: '2 pax', price: '$5,200' },
+  { type: 'Estándar doble', specs: '2 camas Queen Size', capacity: '4 pax', price: '$4,800' },
+  { type: 'Premium doble', specs: '2 camas Queen Size', capacity: '4 pax', price: '$5,000' },
+  { type: 'Premium terraza', specs: '2 camas Queen Size · terraza', capacity: '4 pax', price: '$5,300' },
+  { type: 'Estándar familiar', specs: '—', capacity: '8 pax', price: '$7,900' },
+  { type: 'Penthouse', specs: '3 recámaras · 3 camas King Size', capacity: '6 pax', price: '$14,250' },
+  { type: 'Penthouse Plus', specs: '3 recámaras · 3 camas King Size + 1 sofá cama', capacity: '8 pax', price: '$16,700' },
 ];
 
 const COSTS = [
@@ -89,8 +89,8 @@ export default function Home() {
     offset: ['start start', 'end start'],
   });
 
-  const bgY      = useTransform(scrollYProgress, [0, 1], ['0%', '35%']);
-  const textY    = useTransform(scrollYProgress, [0, 1], ['0%', '55%']);
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '35%']);
+  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '55%']);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
 
   return (
@@ -197,7 +197,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           HOTEL — PALMAS HOTEL & SPA (HOSPEDAJE OFICIAL)
       ══════════════════════════════════════════════════════ */}
-      
+
 
       {/* ══════════════════════════════════════════════════════
           STATS
@@ -378,6 +378,8 @@ export default function Home() {
             <p className="text-gray-500 text-base mt-4 font-light tracking-wide uppercase text-xs">
               Costos de Admisión
             </p>
+            <p className="text-gray-500 text-base mt-4 font-light tracking-wide">
+              No se emitirá factura por concepto de inscripción al evento            </p>
           </FadeUp>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -388,11 +390,10 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: i * 0.12 }}
                 viewport={{ once: true }}
-                className={`relative p-8 md:p-12 rounded-3xl text-center border transition-all duration-300 ${
-                  item.featured
+                className={`relative p-8 md:p-12 rounded-3xl text-center border transition-all duration-300 ${item.featured
                     ? 'bg-[#0066CC]/[0.08] border-[#0066CC]/40'
                     : 'bg-white/[0.03] border-white/[0.07]'
-                }`}
+                  }`}
               >
                 {item.featured && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#0066CC] text-white text-[10px] font-bold tracking-[0.25em] uppercase px-4 py-1 rounded-full">
@@ -517,37 +518,36 @@ export default function Home() {
           {/* Room table */}
           <FadeUp delay={0.15} className="mb-12">
             <div className="-mx-4 sm:mx-0 overflow-x-auto">
-            <div className="rounded-none sm:rounded-2xl border-y sm:border border-white/[0.07]">
-              <table className="w-full text-sm min-w-[480px]">
-                <thead>
-                  <tr className="bg-white/[0.04] border-b border-white/[0.07]">
-                    <th className="text-left px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Habitación</th>
-                    <th className="text-left px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px] hidden sm:table-cell">Especificaciones</th>
-                    <th className="text-center px-3 sm:px-4 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Cap.</th>
-                    <th className="text-right px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Tarifa MXN</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ROOMS.map((room, i) => (
-                    <tr
-                      key={i}
-                      className={`border-b border-white/[0.05] transition-colors hover:bg-white/[0.03] ${
-                        i % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.015]'
-                      }`}
-                    >
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-white font-medium text-xs sm:text-sm">{room.type}</td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 text-xs sm:text-sm hidden sm:table-cell">{room.specs}</td>
-                      <td className="px-3 sm:px-4 py-3 sm:py-4 text-center">
-                        <span className="inline-block bg-[#0066CC]/10 border border-[#0066CC]/25 text-[#0066CC] text-[10px] sm:text-[11px] font-semibold tracking-wide px-2 sm:px-3 py-1 rounded-full">
-                          {room.capacity}
-                        </span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-3 sm:py-4 text-right text-white font-bold tabular-nums text-xs sm:text-sm">{room.price}</td>
+              <div className="rounded-none sm:rounded-2xl border-y sm:border border-white/[0.07]">
+                <table className="w-full text-sm min-w-[480px]">
+                  <thead>
+                    <tr className="bg-white/[0.04] border-b border-white/[0.07]">
+                      <th className="text-left px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Habitación</th>
+                      <th className="text-left px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px] hidden sm:table-cell">Especificaciones</th>
+                      <th className="text-center px-3 sm:px-4 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Cap.</th>
+                      <th className="text-right px-4 sm:px-6 py-3 sm:py-4 text-[#0066CC] font-semibold tracking-widest uppercase text-[10px] sm:text-[11px]">Tarifa MXN</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {ROOMS.map((room, i) => (
+                      <tr
+                        key={i}
+                        className={`border-b border-white/[0.05] transition-colors hover:bg-white/[0.03] ${i % 2 === 0 ? 'bg-transparent' : 'bg-white/[0.015]'
+                          }`}
+                      >
+                        <td className="px-4 sm:px-6 py-3 sm:py-4 text-white font-medium text-xs sm:text-sm">{room.type}</td>
+                        <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-500 text-xs sm:text-sm hidden sm:table-cell">{room.specs}</td>
+                        <td className="px-3 sm:px-4 py-3 sm:py-4 text-center">
+                          <span className="inline-block bg-[#0066CC]/10 border border-[#0066CC]/25 text-[#0066CC] text-[10px] sm:text-[11px] font-semibold tracking-wide px-2 sm:px-3 py-1 rounded-full">
+                            {room.capacity}
+                          </span>
+                        </td>
+                        <td className="px-4 sm:px-6 py-3 sm:py-4 text-right text-white font-bold tabular-nums text-xs sm:text-sm">{room.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </FadeUp>
 
