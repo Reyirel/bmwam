@@ -498,9 +498,6 @@ export default function Formulario() {
           transition={{ duration: 0.7 }}
           className="text-center mb-12"
         >
-          <p className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase mb-4">
-            Gran Competencia BMWAM 2026
-          </p>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
             {step === 3 ? 'Registro Enviado' : 'Registro'}
           </h1>

@@ -440,7 +440,7 @@ export default function Home() {
                 ¿Listo para unirte?
               </h2>
               <p className="text-gray-300/80 text-lg mb-10 max-w-xl mx-auto font-light leading-relaxed">
-                Completa el formulario de registro para reservar tu lugar en la convención. Los cupos son limitados y se asignan por orden de solicitud.
+                Completa el formulario de registro para reservar tu lugar en la convención.
               </p>
               <Link
                 to="/formulario"
