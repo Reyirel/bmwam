@@ -1,5 +1,15 @@
 import { jsPDF } from 'jspdf';
-import logoBase64 from '../assets/logo.png?inline';
+
+// Importación del logo - puede fallar en algunos entornos como Vercel
+let logoBase64 = null;
+try {
+  // @ts-ignore
+  const logoModule = await import('../assets/logo.png?inline');
+  logoBase64 = logoModule?.default ?? logoModule ?? null;
+} catch {
+  // Silenciar error - el PDF se generará sin logo
+  console.warn('[PDF] Logo no disponible, continuando sin logo');
+}
 
 const BLUE   = [0, 102, 204];   // #0066CC
 const DARK   = [10, 10, 20];
@@ -15,9 +25,14 @@ function drawHeader(doc) {
   doc.rect(0, 0, 210, 28, 'F');
 
   // Brand logo
+  let logoAdded = false;
   if (logoBase64) {
-    // colocar logo 10x10mm a la izquierda
-    doc.addImage(logoBase64, 'PNG', 14, 6, 10, 10);
+    try {
+      doc.addImage(logoBase64, 'PNG', 14, 6, 10, 10);
+      logoAdded = true;
+    } catch {
+      // Error al agregar logo, continuar sin él
+    }
   }
 
   // Brand text
@@ -25,7 +40,7 @@ function drawHeader(doc) {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
   // desplazar texto si hay logo
-  const textOffset = logoBase64 ? 14 + 10 + 4 : 14;
+  const textOffset = logoAdded ? 14 + 10 + 4 : 14;
   doc.text('BMW AM', textOffset, 12);
 
   doc.setFontSize(8);
@@ -50,8 +65,12 @@ function drawFooter(doc, pageHeight) {
   // logo pequeño al inicio del pie
   let startX = 14;
   if (logoBase64) {
-    doc.addImage(logoBase64, 'PNG', startX, y + 1, 6, 6);
-    startX += 6 + 2;
+    try {
+      doc.addImage(logoBase64, 'PNG', startX, y + 1, 6, 6);
+      startX += 6 + 2;
+    } catch {
+      // Error al agregar logo, continuar sin él
+    }
   }
   doc.text(
     `BMWAM · Ixmiquilpan, Hidalgo · 2026  —  Generado el ${new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' })}`,
