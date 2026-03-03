@@ -4,6 +4,7 @@ import Home from './views/Home';
 import Formulario from './views/Formulario';
 import AdminPanel from './views/AdminPanel';
 import StatusCheck from './views/StatusCheck';
+import Programa from './views/Programa';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/formulario" element={<Formulario />} />
         <Route path="/status" element={<StatusCheck />} />
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/programa" element={<Programa />} />
       </Routes>
     </div>
   );

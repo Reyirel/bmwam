@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import logo from '../assets/logo.png';
-import logoixmi from '../assets/PNGBLANCO.png';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -28,22 +26,20 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between relative h-16">
-        {/* Left - Logo Principal */}
-        <Link to="/" className="flex items-center z-20">
-          <img src={logoixmi} alt="Logo de ixmiquiloan" className="w-20 h-20 object-contain" />
-        </Link>
+        {/* Left - Brand Text + Links */}
+        <div className="flex items-center gap-8 lg:gap-10">
+          <Link to="/" className="flex items-center z-20">
+            <h3 className="text-xl font-black tracking-tight leading-none">
+              BMW <span className="text-[#0066CC]">AM</span>
+            </h3>
+          </Link>
 
-        {/* Center - Logo Blanco */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center z-10">
-          <img src={logo} alt="BMWAM white logo" className="w-14 h-14 object-contain filter brightness-200" />
-        </div>
-
-        {/* Right - Links */}
-        <div className="flex items-center gap-6 lg:gap-8">
+          {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-6 lg:gap-8">
             {[
               { label: 'Inicio', to: '/' },
               { label: 'El Evento', href: '/#evento' },
+              { label: 'Programa', to: '/programa' },
               { label: 'Costos', href: '/#costos' },
               { label: 'Hotel', href: '/#hotel' },
             ].map((item) =>
@@ -72,10 +68,13 @@ export default function Navbar() {
               Consultar
             </Link>
           </div>
-          
+        </div>
+
+        {/* Right - CTA Button + Mobile Menu */}
+        <div className="flex items-center gap-4">
           <Link
             to="/formulario"
-            className="px-5 py-2.5 bg-[#0066CC] hover:bg-[#0052a3] text-white text-sm font-semibold rounded-full transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,102,204,0.45)] hover:scale-105"
+            className="hidden sm:inline-flex px-5 py-2.5 bg-[#0066CC] hover:bg-[#0052a3] text-white text-sm font-semibold rounded-full transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,102,204,0.45)] hover:scale-105"
           >
             Registrarme
           </Link>
@@ -83,20 +82,20 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden text-white w-8 h-8 flex items-center justify-center"
+            className="md:hidden text-white w-10 h-10 flex items-center justify-center"
           >
             <div className="space-y-1.5">
               <motion.span
                 animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-                className="block w-5 h-0.5 bg-white origin-center"
+                className="block w-6 h-0.5 bg-white origin-center"
               />
               <motion.span
                 animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-                className="block w-5 h-0.5 bg-white"
+                className="block w-6 h-0.5 bg-white"
               />
               <motion.span
                 animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-                className="block w-5 h-0.5 bg-white origin-center"
+                className="block w-6 h-0.5 bg-white origin-center"
               />
             </div>
           </button>
@@ -114,11 +113,19 @@ export default function Navbar() {
             className="md:hidden overflow-hidden bg-[#050505]/98 backdrop-blur-2xl border-t border-white/[0.06]"
           >
             <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-4">
-              <Link to="/" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Inicio</Link>
-              <a href="/#evento" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>El Evento</a>
-              <a href="/#costos" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Costos</a>
-              <a href="/#hotel" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Hotel</a>
-              <Link to="/status" className="text-gray-300 hover:text-white py-2 text-sm font-medium" onClick={() => setMenuOpen(false)}>Consultar Registro</Link>
+              <Link to="/" className="text-gray-300 hover:text-white py-2 text-base font-medium" onClick={() => setMenuOpen(false)}>Inicio</Link>
+              <a href="/#evento" className="text-gray-300 hover:text-white py-2 text-base font-medium" onClick={() => setMenuOpen(false)}>El Evento</a>
+              <Link to="/programa" className="text-gray-300 hover:text-white py-2 text-base font-medium" onClick={() => setMenuOpen(false)}>Programa de Actividades</Link>
+              <a href="/#costos" className="text-gray-300 hover:text-white py-2 text-base font-medium" onClick={() => setMenuOpen(false)}>Costos</a>
+              <a href="/#hotel" className="text-gray-300 hover:text-white py-2 text-base font-medium" onClick={() => setMenuOpen(false)}>Hotel</a>
+              <Link to="/status" className="text-gray-300 hover:text-white py-2 text-base font-medium" onClick={() => setMenuOpen(false)}>Consultar Registro</Link>
+              <Link 
+                to="/formulario" 
+                className="mt-2 px-5 py-3 bg-[#0066CC] hover:bg-[#0052a3] text-white text-base font-semibold rounded-full text-center transition-all duration-300" 
+                onClick={() => setMenuOpen(false)}
+              >
+                Registrarme
+              </Link>
             </div>
           </motion.div>
         )}
