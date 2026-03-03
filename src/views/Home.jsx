@@ -150,8 +150,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.75 }}
             className="text-lg sm:text-xl text-gray-300/90 mb-10 max-w-xl mx-auto leading-relaxed font-light"
           >
-            El evento de motociclismo más emocionante del Estado de Hidalgo, rutas únicas y la adrenalina BMW en cada kilómetro.
-          </motion.p>
+            El evento de motociclismo más emocionante de México llega a Hidalgo: rutas únicas y la adrenalina BMW en cada kilómetro.          </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -393,8 +392,8 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: i * 0.12 }}
                 viewport={{ once: true }}
                 className={`relative p-8 md:p-12 rounded-3xl text-center border transition-all duration-300 ${item.featured
-                    ? 'bg-[#0066CC]/[0.08] border-[#0066CC]/40'
-                    : 'bg-white/[0.03] border-white/[0.07]'
+                  ? 'bg-[#0066CC]/[0.08] border-[#0066CC]/40'
+                  : 'bg-white/[0.03] border-white/[0.07]'
                   }`}
               >
                 {item.featured && (
