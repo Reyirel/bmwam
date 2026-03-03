@@ -5,6 +5,8 @@ import heroImage from '../assets/herosetionimage.png';
 const BMW_VIDEO_SRC = 'https://www.youtube.com/embed/lSJ19gQq-0Q?autoplay=1&mute=1&loop=1&controls=0&playlist=lSJ19gQq-0Q&modestbranding=1&rel=0&showinfo=0'
 import imagen3 from '../assets/imagen3.jpg'
 import logo from '../assets/logo.png'
+import chinoLogo from '../assets/chino_en_moto_web.png'
+import bmwLogo from '../assets/bmwlogo.png'
 
 /* ─── Animated Counter ─────────────────────────────────────────── */
 function Counter({ to, suffix = '' }) {
@@ -46,9 +48,9 @@ function FadeUp({ children, delay = 0, className = '' }) {
 
 /* ─── Data ──────────────────────────────────────────────────────── */
 const STATS = [
-  { value: 3, suffix: '', label: 'Rutas Diseñadas' },
+  { value: 2, suffix: '', label: 'Rutas Diseñadas' },
   { value: 300, suffix: '+', label: 'Cupos Disponibles' },
-  { value: 120, suffix: ' km', label: 'Total de Recorrido' },
+  { value: 120, suffix: ' km', label: 'Por dia' },
 ];
 
 const ROOMS = [
@@ -115,21 +117,21 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/60 via-transparent to-[#050505]/40" />
         </motion.div>
 
+        {/* Logo en esquina superior derecha */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="absolute top-8 right-8 z-20 hidden sm:flex"
+        >
+          <img src={chinoLogo} alt="Chino en moto" className="w-32 h-32 md:w-40 md:h-40 object-contain" />
+        </motion.div>
+
         {/* Hero text */}
         <motion.div
           style={{ y: textY, opacity: heroOpacity }}
           className="relative z-10 text-center px-6 max-w-5xl mx-auto"
         >
-          <motion.p
-            initial={{ opacity: 0, letterSpacing: '0.2em' }}
-            animate={{ opacity: 1, letterSpacing: '0.5em' }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="text-[#0066CC] text-xs font-semibold uppercase mb-6 tracking-[0.5em] flex items-center justify-center"
-          >
-            <img src={logo} alt="BMWAM logo" className="w-6 h-6 mr-2 object-contain" />
-            BMWAM · Ixmiquilpan, Hidalgo
-          </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -138,7 +140,7 @@ export default function Home() {
           >
             <span className="block text-white">XV Convención Internacional</span>
             <span className="block bg-gradient-to-r from-[#0066CC] via-[#1a8fff] to-[#00c6ff] bg-clip-text text-transparent">
-              BMWAM Ixmiquilpan 2026
+              De amigos Motociclistas 2026
             </span>
           </motion.h1>
 
@@ -590,6 +592,90 @@ export default function Home() {
               </p>
             </div>
           </FadeUp>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          LOGOS PARTNERS
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 px-4 sm:px-6 bg-[#050505] border-y border-white/[0.06]">
+        <div className="max-w-6xl mx-auto">
+          <FadeUp className="text-center mb-16">
+            <span className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase block mb-4">
+              Nuestros Aliados
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
+              Organizadores y Partners Oficiales
+            </h2>
+          </FadeUp>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 items-center justify-items-center">
+            {/* Logo Chino en Moto */}
+            <FadeUp delay={0.05}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-8 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-48"
+              >
+                <img
+                  src={chinoLogo}
+                  alt="Chino en Moto"
+                  className="max-w-[140px] max-h-[140px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo BMW AM */}
+            <FadeUp delay={0.1}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-8 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-48"
+              >
+                <img
+                  src={logo}
+                  alt="BMW AM"
+                  className="max-w-[140px] max-h-[140px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo BMW */}
+            <FadeUp delay={0.15}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-8 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-48"
+              >
+                <img
+                  src={bmwLogo}
+                  alt="BMW"
+                  className="max-w-[140px] max-h-[140px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+          </div>
+
+          {/* Decorative elements */}
+          <div className="mt-12 pt-12 border-t border-white/[0.06]">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <p className="text-gray-500 text-sm leading-relaxed font-light">
+                En colaboración con los principales protagonistas del motociclismo en México
+              </p>
+            </motion.div>
+          </div>
         </div>
       </section>
 
