@@ -225,21 +225,40 @@ export default function StatusCheck() {
                   <div className="space-y-3">
                     {[
                       { label: 'Código',          value: registro.codigo },
+                      { label: 'Número de Rifa',  value: registro.numero_rifa ? `#${registro.numero_rifa}` : null },
                       { label: 'Participante',     value: registro.nombre },
                       { label: 'Email',            value: registro.email },
                       { label: 'Talla Jersey',     value: registro.talla_jersey },
-                      { label: 'Nombre en Jersey', value: registro.nombre_jersey },
                       { label: 'Motocicleta',      value: registro.moto },
                       { label: 'Fecha de Registro',value: formatFecha(registro.created_at) },
-                    ].map(({ label, value }) => (
+                    ].filter(item => item.value).map(({ label, value }) => (
                       <div key={label} className="flex justify-between items-start gap-3 text-sm">
                         <span className="text-gray-500 flex-shrink-0 text-xs sm:text-sm">{label}</span>
-                        <span className={`text-right font-medium break-all text-xs sm:text-sm ${label === 'Código' ? 'text-[#0066CC] font-mono tracking-widest' : 'text-gray-200'}`}>
+                        <span className={`text-right font-medium break-all text-xs sm:text-sm ${label === 'Código' ? 'text-[#0066CC] font-mono tracking-widest' : label === 'Número de Rifa' ? 'text-emerald-400 font-bold' : 'text-gray-200'}`}>
                           {value || '—'}
                         </span>
                       </div>
                     ))}
                   </div>
+
+                  {/* Mostrar participantes extra con sus números de rifa */}
+                  {registro.participantes_extra && registro.participantes_extra.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-white/[0.05]">
+                      <p className="text-gray-600 text-[10px] uppercase tracking-[0.25em] font-semibold mb-3">
+                        Participantes adicionales
+                      </p>
+                      <div className="space-y-3">
+                        {registro.participantes_extra.map((p, i) => (
+                          <div key={i} className="flex justify-between items-center text-sm">
+                            <span className="text-gray-400 text-xs sm:text-sm">{p.nombre}</span>
+                            <span className="text-emerald-400 font-bold text-xs sm:text-sm">
+                              {p.numero_rifa ? `#${p.numero_rifa}` : '—'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

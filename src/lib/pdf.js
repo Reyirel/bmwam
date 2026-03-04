@@ -211,18 +211,27 @@ export function generateRegistroPDF(registro) {
   doc.text('Datos del Participante', 21, 116);
 
   const rows = [
+    ['Número de Rifa',       registro.numero_rifa ? `#${registro.numero_rifa}` : '—'],
     ['Nombre completo',      registro.nombre],
     ['Email',                registro.email],
     ['Teléfono (WhatsApp)',  registro.telefono],
     ['Procedencia',          registro.procedencia],
     ['Motocicleta',          registro.moto],
     ['Talla de Jersey',      registro.talla_jersey],
-    ['Nombre en Jersey',     registro.nombre_jersey],
   ];
 
   if (registro.acomp_nombre) {
     rows.push(['Jersey Acompañante', registro.acomp_nombre]);
     rows.push(['Talla Acompañante',  registro.acomp_talla]);
+  }
+
+  // Agregar participantes extra con sus números de rifa
+  if (registro.participantes_extra && registro.participantes_extra.length > 0) {
+    registro.participantes_extra.forEach((p, i) => {
+      rows.push([`— Participante ${i + 2} —`, '']);
+      rows.push(['Número de Rifa', p.numero_rifa ? `#${p.numero_rifa}` : '—']);
+      rows.push(['Nombre', p.nombre]);
+    });
   }
 
   drawDataTable(doc, rows, 126);
@@ -314,18 +323,27 @@ export function generateAprobadoPDF(registro) {
   doc.text('Datos del Participante', 21, 114);
 
   const rows = [
+    ['Número de Rifa',       registro.numero_rifa ? `#${registro.numero_rifa}` : '—'],
     ['Nombre completo',      registro.nombre],
     ['Email',                registro.email],
     ['Teléfono (WhatsApp)',  registro.telefono],
     ['Procedencia',          registro.procedencia],
     ['Motocicleta',          registro.moto],
     ['Talla de Jersey',      registro.talla_jersey],
-    ['Nombre en Jersey',     registro.nombre_jersey],
   ];
 
   if (registro.acomp_nombre) {
     rows.push(['Jersey Acompañante', registro.acomp_nombre]);
     rows.push(['Talla Acompañante',  registro.acomp_talla]);
+  }
+
+  // Agregar participantes extra con sus números de rifa
+  if (registro.participantes_extra && registro.participantes_extra.length > 0) {
+    registro.participantes_extra.forEach((p, i) => {
+      rows.push([`— Participante ${i + 2} —`, '']);
+      rows.push(['Número de Rifa', p.numero_rifa ? `#${p.numero_rifa}` : '—']);
+      rows.push(['Nombre', p.nombre]);
+    });
   }
 
   drawDataTable(doc, rows, 124);

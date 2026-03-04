@@ -86,7 +86,7 @@ function ParticipanteDetalle({ p, titulo }) {
       <Row label="Nombre Jersey"  value={p.nombre_jersey} />
       <Row label="Talla Pulsera"  value={p.talla_pulsera} />
       <Row label="Precio"         value={p.precio ? `$${Number(p.precio).toLocaleString('es-MX')} MXN` : '—'} />
-      <Row label="# Rifa"         value={p.rifa_id ? `#${p.rifa_id}` : '—'} highlight />
+      <Row label="# Rifa"         value={(p.numero_rifa || p.rifa_id) ? `#${p.numero_rifa || p.rifa_id}` : '—'} highlight />
     </div>
   );
 }
@@ -121,7 +121,7 @@ function DetalleModal({ registro, onClose, onCambiarEstado }) {
                 {registro.codigo}
               </span>
               <span className="text-gray-600 text-xs font-bold">
-                Rifa <span className="text-white">#{registro.rifa_id}</span>
+                Rifa <span className="text-white">#{registro.numero_rifa || registro.rifa_id || '—'}</span>
               </span>
               <span className="text-gray-600 text-xs">· {formatFecha(registro.created_at)}</span>
             </div>
@@ -153,6 +153,7 @@ function DetalleModal({ registro, onClose, onCambiarEstado }) {
               talla_pulsera: registro.talla_pulsera,
               es_socio:      registro.es_socio,
               precio:        registro.precio,
+              numero_rifa:   registro.numero_rifa,
               rifa_id:       registro.rifa_id,
             }}
             titulo="Participante 1 (Principal)"
@@ -531,8 +532,8 @@ export default function AdminPanel() {
                                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                                   <span className="text-white text-sm font-semibold truncate">{r.nombre}</span>
                                   <span className="text-[10px] font-mono text-gray-600 bg-white/[0.05] px-1.5 py-0.5 rounded flex-shrink-0">{r.codigo}</span>
-                                  {r.rifa_id && (
-                                    <span className="text-[10px] font-bold text-[#6aadff] bg-[#0066CC]/10 px-1.5 py-0.5 rounded flex-shrink-0">#{r.rifa_id}</span>
+                                  {(r.numero_rifa || r.rifa_id) && (
+                                    <span className="text-[10px] font-bold text-[#6aadff] bg-[#0066CC]/10 px-1.5 py-0.5 rounded flex-shrink-0">#{r.numero_rifa || r.rifa_id}</span>
                                   )}
                                   <SocioBadge esSocio={r.es_socio} />
                                 </div>
@@ -575,8 +576,8 @@ export default function AdminPanel() {
                               </div>
                               {/* Rifa ID */}
                               <div className="text-center">
-                                {r.rifa_id ? (
-                                  <span className="font-black text-white tabular-nums text-base">#{r.rifa_id}</span>
+                                {(r.numero_rifa || r.rifa_id) ? (
+                                  <span className="font-black text-white tabular-nums text-base">#{r.numero_rifa || r.rifa_id}</span>
                                 ) : (
                                   <span className="text-gray-700 text-xs">—</span>
                                 )}

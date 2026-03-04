@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { uploadComprobante, insertRegistro, generateUniqueCodigo } from '../lib/firebase';
+import { uploadComprobante, insertRegistro, generateUniqueCodigo, getNextRifaNumbers } from '../lib/firebase';
 import { generateRegistroPDF } from '../lib/pdf';
 
 const JERSEY_SIZES  = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
@@ -33,10 +33,6 @@ const EMPTY_PARTICIPANTE = {
   generoJersey: '', tallaJersey: '', tallaPulsera: '',
   esSocio: false,
 };
-
-function generateRifaId() {
-  return String(Math.floor(1000 + Math.random() * 9000));
-}
 
 function precioParticipante(p) {
   return p.esSocio ? PRECIO_SOCIO : PRECIO_GENERAL;
@@ -410,6 +406,10 @@ export default function Formulario() {
           ? await uploadComprobante(comprobante, codigo)
           : null;
 
+        // Calcular cuántos números de rifa necesitamos (1 principal + extras)
+        const totalParticipantes = 1 + participantes.length;
+        const rifaNumbers = await getNextRifaNumbers(totalParticipantes);
+
         try {
           row = await insertRegistro({
             codigo,
@@ -423,13 +423,13 @@ export default function Formulario() {
             talla_pulsera:        form.tallaPulsera,
             es_socio:             form.esSocio,
             precio:               precioParticipante(form),
-            rifa_id:              generateRifaId(),
+            numero_rifa:          rifaNumbers[0],
             emergencia_nombre:    form.emergenciaNombre,
             emergencia_telefono:  form.emergenciaTelefono,
             notas:                form.notas || null,
             total_pago:           total,
             participantes_extra:  participantes.length > 0
-              ? participantes.map((p) => ({
+              ? participantes.map((p, index) => ({
                   nombre:        p.nombre,
                   email:         p.email,
                   telefono:      p.telefono,
@@ -440,7 +440,7 @@ export default function Formulario() {
                   talla_pulsera: p.tallaPulsera,
                   es_socio:      p.esSocio,
                   precio:        precioParticipante(p),
-                  rifa_id:       generateRifaId(),
+                  numero_rifa:   rifaNumbers[index + 1],
                 }))
               : null,
             comprobante_url: comprovanteUrl,

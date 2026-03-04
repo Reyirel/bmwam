@@ -37,7 +37,53 @@ const db      = getFirestore(app);
 const storage = getStorage(app);
 
 const COLLECTION = 'registros';
-// const CODIGOS_COLLECTION = 'codigos'; // ya no necesitamos coleccion extra
+const COUNTERS_COLLECTION = 'counters';
+
+/* ─── Contador de números de rifa ─────────────────────────────── */
+
+/**
+ * Obtiene el siguiente número de rifa disponible usando una transacción
+ * para garantizar que no se repitan números.
+ * @param {number} cantidad - Cantidad de números a reservar
+ * @returns {Promise<number[]>} - Array con los números de rifa asignados
+ */
+export async function getNextRifaNumbers(cantidad = 1) {
+  const counterRef = doc(db, COUNTERS_COLLECTION, 'rifa');
+  
+  const numbers = await runTransaction(db, async (tx) => {
+    const counterSnap = await tx.get(counterRef);
+    let currentNumber = 0;
+    
+    if (counterSnap.exists()) {
+      currentNumber = counterSnap.data().lastNumber || 0;
+    }
+    
+    // Reservar los números
+    const assignedNumbers = [];
+    for (let i = 1; i <= cantidad; i++) {
+      assignedNumbers.push(currentNumber + i);
+    }
+    
+    // Actualizar el contador
+    tx.set(counterRef, { lastNumber: currentNumber + cantidad }, { merge: true });
+    
+    return assignedNumbers;
+  });
+  
+  return numbers;
+}
+
+/**
+ * Obtiene el número de rifa actual (último asignado)
+ */
+export async function getCurrentRifaNumber() {
+  const counterRef = doc(db, COUNTERS_COLLECTION, 'rifa');
+  const snap = await getDoc(counterRef);
+  if (snap.exists()) {
+    return snap.data().lastNumber || 0;
+  }
+  return 0;
+}
 
 /* ─── Generación de código único ──────────────────────────────── */
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
