@@ -131,11 +131,16 @@ export async function generateUniqueCodigo() {
  * Retorna la URL pública de descarga.
  */
 export async function uploadComprobante(file, codigo) {
-  const ext     = file.name.split('.').pop();
+  const ext     = file.name.split('.').pop().toLowerCase();
   const path    = `comprobantes/${codigo}/${Date.now()}.${ext}`;
   const fileRef = ref(storage, path);
 
-  await uploadBytes(fileRef, file);
+  // Especificar el content-type para asegurar que se maneje correctamente
+  const metadata = {
+    contentType: file.type || (ext === 'pdf' ? 'application/pdf' : `image/${ext === 'jpg' ? 'jpeg' : ext}`),
+  };
+
+  await uploadBytes(fileRef, file, metadata);
   return getDownloadURL(fileRef);
 }
 

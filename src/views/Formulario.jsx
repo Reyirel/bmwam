@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { uploadComprobante, insertRegistro, generateUniqueCodigo, getNextRifaNumbers } from '../lib/firebase';
 import { generateRegistroPDF } from '../lib/pdf';
+import { processFileForUpload, isPdfFile } from '../lib/pdfToImage';
 
 const JERSEY_SIZES  = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 const PULSERA_SIZES = ['S', 'M', 'L', '2XL', '3XL'];
@@ -295,6 +296,7 @@ export default function Formulario() {
   const [errors, setErrors] = useState({});
   const [comprobante, setComprobante] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [processingFile, setProcessingFile] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [registroGuardado, setRegistroGuardado] = useState(null);
 
@@ -470,15 +472,31 @@ export default function Formulario() {
     }
   };
 
-  const handleFile = (e) => {
+  const handleFile = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 10 * 1024 * 1024) {
       setErrors((p) => ({ ...p, comprobante: 'El archivo no debe superar 10 MB' }));
       return;
     }
-    setComprobante(file);
-    setErrors((p) => ({ ...p, comprobante: '' }));
+    
+    // Si es PDF, convertir a JPG
+    if (isPdfFile(file)) {
+      setProcessingFile(true);
+      setErrors((p) => ({ ...p, comprobante: '' }));
+      try {
+        const jpgFile = await processFileForUpload(file);
+        setComprobante(jpgFile);
+      } catch (err) {
+        console.error('Error al convertir PDF:', err);
+        setErrors((p) => ({ ...p, comprobante: 'Error al procesar el PDF. Intenta con una imagen.' }));
+      } finally {
+        setProcessingFile(false);
+      }
+    } else {
+      setComprobante(file);
+      setErrors((p) => ({ ...p, comprobante: '' }));
+    }
   };
 
   const handleDownloadPDF = () => {
@@ -720,13 +738,27 @@ export default function Formulario() {
                   </p>
 
                   <label className={`group relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 ${
-                    comprobante ? 'border-[#0066CC]/60 bg-[#0066CC]/[0.06]'
+                    processingFile ? 'border-[#0066CC]/60 bg-[#0066CC]/[0.06] cursor-wait'
+                    : comprobante ? 'border-[#0066CC]/60 bg-[#0066CC]/[0.06]'
                     : errors.comprobante ? 'border-red-500/50 bg-red-500/[0.04]'
                     : 'border-white/15 hover:border-[#0066CC]/50 hover:bg-[#0066CC]/[0.04]'
                   }`}>
                     <input type="file" accept="image/png,image/jpeg,image/jpg,image/webp,.pdf"
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFile} />
-                    {comprobante ? (
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                      onChange={handleFile} 
+                      disabled={processingFile} />
+                    {processingFile ? (
+                      <div className="text-center px-6">
+                        <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-[#0066CC]/20 flex items-center justify-center">
+                          <svg className="animate-spin w-6 h-6 text-[#0066CC]" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                          </svg>
+                        </div>
+                        <p className="text-white text-sm font-semibold">Procesando PDF...</p>
+                        <p className="text-gray-500 text-xs mt-1">Convirtiendo a imagen</p>
+                      </div>
+                    ) : comprobante ? (
                       <div className="text-center px-6">
                         <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-[#0066CC]/20 flex items-center justify-center">
                           <svg className="w-6 h-6 text-[#0066CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -748,6 +780,7 @@ export default function Formulario() {
                           <span className="text-[#0066CC]">haz clic para seleccionar</span>
                         </p>
                         <p className="text-gray-600 text-xs mt-2">PNG, JPG, WEBP, PDF — máx. 10 MB</p>
+                        <p className="text-gray-700 text-[10px] mt-1">(Los PDF se convierten automáticamente a imagen)</p>
                       </div>
                     )}
                   </label>
@@ -778,8 +811,8 @@ export default function Formulario() {
                     className="px-6 py-4 border border-white/10 hover:border-white/30 text-gray-400 hover:text-white font-medium rounded-2xl transition-all duration-300 text-sm">
                     Regresar
                   </button>
-                  <motion.button whileHover={{ scale: loading ? 1 : 1.02 }} whileTap={{ scale: loading ? 1 : 0.98 }}
-                    type="submit" disabled={loading}
+                  <motion.button whileHover={{ scale: loading || processingFile ? 1 : 1.02 }} whileTap={{ scale: loading || processingFile ? 1 : 0.98 }}
+                    type="submit" disabled={loading || processingFile}
                     className="flex-1 py-4 bg-[#0066CC] hover:bg-[#0052a3] disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold rounded-2xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,102,204,0.4)] text-sm tracking-wide flex items-center justify-center gap-2"
                   >
                     {loading ? (
