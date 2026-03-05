@@ -800,9 +800,40 @@ export default function Formulario() {
           {/* ════════════════════════════════════════════════════
               STEP 3 — CONFIRMACIÓN + PDF
           ════════════════════════════════════════════════════ */}
-          {step === 3 && registroGuardado && (
+          {step === 3 && (
             <motion.div key="step3" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }} className="text-center">
+
+              {/* Estado de carga o error si no hay registro guardado */}
+              {!registroGuardado ? (
+                <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-10 md:p-14">
+                  {loading ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <svg className="animate-spin w-12 h-12 text-[#0066CC] mb-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                      </svg>
+                      <p className="text-gray-400">Procesando tu registro...</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                        <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-2">Algo salió mal</h3>
+                      <p className="text-gray-400 mb-6">No pudimos completar tu registro. Por favor intenta de nuevo.</p>
+                      <button
+                        onClick={() => { setStep(2); scrollTop(); }}
+                        className="px-6 py-3 bg-[#0066CC] hover:bg-[#0052a3] text-white font-bold rounded-xl transition-all duration-300"
+                      >
+                        Volver a intentar
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
 
               <div className="bg-white/[0.04] border border-white/[0.08] rounded-3xl p-10 md:p-14">
                 {/* Icono */}
@@ -906,6 +937,7 @@ export default function Formulario() {
                   </p>
                 </motion.div>
               </div>
+              )}
             </motion.div>
           )}
 
