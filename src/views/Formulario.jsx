@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { uploadComprobante, insertRegistro, generateUniqueCodigo, getNextRifaNumbers } from '../lib/firebase';
 import { generateRegistroPDF } from '../lib/pdf';
@@ -288,6 +288,8 @@ function ParticipantFields({ data, errors, onField }) {
   );
 }
 
+const STORAGE_KEY = 'bmwam_registro_form';
+
 /* ═══════════════════════════════════════════════════════════════
    MAIN COMPONENT
 ═══════════════════════════════════════════════════════════════ */
@@ -312,6 +314,53 @@ export default function Formulario() {
   /* ─── Participantes adicionales ─── */
   const [participantes, setParticipantes] = useState([]);
   const [participanteErrors, setParticipanteErrors] = useState([]);
+
+  /* ─── Persistencia en sessionStorage para evitar pérdida en Android ─── */
+  const saveToStorage = (data) => {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('No se pudo guardar en sessionStorage:', e);
+    }
+  };
+
+  const loadFromStorage = () => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.warn('No se pudo cargar desde sessionStorage:', e);
+      return null;
+    }
+  };
+
+  const clearStorage = () => {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      console.warn('No se pudo limpiar sessionStorage:', e);
+    }
+  };
+
+  // Restaurar estado al montar el componente
+  useEffect(() => {
+    const saved = loadFromStorage();
+    if (saved) {
+      if (saved.form) setForm(saved.form);
+      if (saved.participantes) setParticipantes(saved.participantes);
+      if (saved.step) setStep(saved.step);
+    }
+  }, []);
+
+  // Guardar estado cuando cambie
+  useEffect(() => {
+    // No guardar si ya completamos el registro
+    if (step === 3 && registroGuardado) {
+      clearStorage();
+      return;
+    }
+    saveToStorage({ form, participantes, step });
+  }, [form, participantes, step, registroGuardado]);
 
   /* ─── Helpers ─── */
   const allParticipants = [form, ...participantes];
@@ -771,7 +820,7 @@ export default function Formulario() {
                     ) : (
                       <div className="text-center px-6">
                         <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-white/[0.05] flex items-center justify-center group-hover:bg-[#0066CC]/15 transition-colors">
-                          <svg className="w-6 h-6 text-gray-500 group-hover:text-[#0066CC] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-6 h-6 text-gray-500 group-hover:text-[#0066CC] transition-colores" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                           </svg>
                         </div>
