@@ -606,6 +606,7 @@ Reserva tu lugar y sé parte de este encuentro único, donde la pasión por roda
                 {[
                   { label: 'Teléfono / WhatsApp', value: '771-711-0007' },
                   { label: 'Teléfono', value: '771-110-4815' },
+                  { label: 'Teléfono / WhatsApp', value: '772-150-0156' },
                 ].map(({ label, value }) => (
                   <div key={value} className="flex flex-col gap-0.5">
                     <span className="text-gray-600 text-[10px] uppercase tracking-[0.2em] font-medium">{label}</span>
