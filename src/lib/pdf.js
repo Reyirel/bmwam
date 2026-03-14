@@ -45,7 +45,7 @@ function drawHeader(doc) {
 
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
-  doc.text('GRAN COMPETENCIA 2026  ·  IXMIQUILPAN, HIDALGO', textOffset, 19);
+  doc.text('XV Convención Internacional Amigos Motociclistas BMW Ixmiquilpan 2026', textOffset, 19);
 
   // Thin white line at bottom of header
   doc.setDrawColor(...WHITE);
