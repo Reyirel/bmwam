@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(npm install:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(Get-ChildItem -Recurse -Depth 2)",
+      "Bash(Select-Object -First 50)",
+      "Bash(where node *)",
+      "Bash(where npm *)",
+      "Bash(cmd /c \"npm --version\")",
+      "Bash(/cmd/npm.cmd install *)",
+      "Bash(/mingw64/bin/npm install *)"
     ]
   }
 }

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { uploadComprobante, insertRegistro, generateUniqueCodigo, getNextRifaNumbers } from '../lib/firebase';
 import { generateRegistroPDF } from '../lib/pdf';
 import { processFileForUpload, isPdfFile } from '../lib/pdfToImage';
+import { sendConfirmationEmails } from '../lib/email';
 
 const JERSEY_SIZES  = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
 const PULSERA_SIZES = ['S', 'M', 'L', '2XL', '3XL'];
@@ -48,7 +49,7 @@ function inputCls(error) {
 
 function Field({ label, required, hint, error, children }) {
   return (
-    <div>
+    <div data-field-error={error ? 'true' : undefined}>
       <label className="block text-sm font-medium text-gray-300 mb-2">
         {label}
         {required && <span className="text-[#0066CC] ml-1">*</span>}
@@ -294,6 +295,7 @@ const STORAGE_KEY = 'bmwam_registro_form';
    MAIN COMPONENT
 ═══════════════════════════════════════════════════════════════ */
 export default function Formulario() {
+  const step1FormRef = useRef(null);
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [comprobante, setComprobante] = useState(null);
@@ -348,7 +350,11 @@ export default function Formulario() {
     if (saved) {
       if (saved.form) setForm(saved.form);
       if (saved.participantes) setParticipantes(saved.participantes);
-      if (saved.step) setStep(saved.step);
+      // Solo restaurar paso 2 si todos los campos requeridos están llenos
+      if (saved.step === 2) {
+        const todoLleno = REQUIRED_FIELDS.every(f => saved.form?.[f]?.trim());
+        if (todoLleno) setStep(2);
+      }
     }
   }, []);
 
@@ -430,6 +436,10 @@ export default function Formulario() {
     if (Object.keys(newErrors).length || hasPartErrors) {
       setErrors(newErrors);
       setParticipanteErrors(newPartErrors);
+      setTimeout(() => {
+        const firstError = step1FormRef.current?.querySelector('[data-field-error="true"]');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
       return;
     }
 
@@ -513,6 +523,7 @@ export default function Formulario() {
       setRegistroGuardado(row);
       setStep(3);
       scrollTop();
+      sendConfirmationEmails(row).catch(err => console.error('Error enviando correo de confirmación:', err));
     } catch (err) {
       console.error(err);
       setSubmitError('Ocurrió un error al enviar tu registro. Por favor intenta de nuevo.');
@@ -590,6 +601,7 @@ export default function Formulario() {
           {step === 1 && (
             <motion.form
               key="step1"
+              ref={step1FormRef}
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -40 }}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAllRegistros, updateEstado, getAdminCredentials } from '../lib/firebase';
+import { sendStatusEmail } from '../lib/email';
 
 /* ─── Helpers ─────────────────────────────────────────────────── */
 const ESTADO_CONFIG = {
@@ -372,6 +373,12 @@ export default function AdminPanel() {
 
   const cambiarEstado = async (id, nuevoEstado) => {
     await updateEstado(id, nuevoEstado);
+    const registro = registros.find((r) => r.id === id);
+    if (registro && (nuevoEstado === 'aprobado' || nuevoEstado === 'rechazado')) {
+      sendStatusEmail(registro, nuevoEstado).catch((err) =>
+        console.error('Error enviando correo de estado:', err)
+      );
+    }
     setRegistros((prev) =>
       prev.map((r) => (r.id === id ? { ...r, estado: nuevoEstado } : r))
     );
