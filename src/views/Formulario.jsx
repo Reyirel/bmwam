@@ -344,6 +344,13 @@ export default function Formulario() {
     }
   };
 
+  // Meta Pixel: registrar PageView solo al entrar a la ruta /formulario
+  useEffect(() => {
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'PageView');
+    }
+  }, []);
+
   // Restaurar estado al montar el componente
   useEffect(() => {
     const saved = loadFromStorage();
@@ -963,7 +970,7 @@ export default function Formulario() {
                     </p>
                     <div className="mt-4 p-4 bg-[#e0f2fe] border border-[#38bdf8] rounded-xl">
                       <p className="text-[#0369a1] text-sm font-semibold mb-1">¿Dudas sobre tu registro?</p>
-                      <p className="text-[#0369a1] text-xs">Envía un WhatsApp al <span className="font-bold">7721227378</span> para recibir información sobre el proceso de registro.</p>
+                      <p className="text-[#0369a1] text-xs">Envía un WhatsApp al <span className="font-bold">7721344461</span> para recibir información sobre el proceso de registro.</p>
                     </div>
                   </div>
 

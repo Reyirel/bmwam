@@ -25,7 +25,7 @@ function baseParams(registro, estado, asunto, mensaje) {
     codigo:      registro.codigo,
     evento:      'XV Convención Internacional BMW AM 2026',
     status_url:  `${window.location.origin}/status`,
-    whatsapp:    '7721227378',
+    whatsapp:    '7721344461',
     estado,
     asunto,
     mensaje,
