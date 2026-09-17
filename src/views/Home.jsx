@@ -306,6 +306,209 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
+          LOGOS PARTNERS
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 px-4 sm:px-6 bg-[#050505] border-y border-white/[0.06]">
+        <div className="max-w-6xl mx-auto">
+          <FadeUp className="text-center mb-16">
+            <span className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase block mb-4">
+              Nuestros Aliados
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
+              Organizadores y Partners Oficiales
+            </h2>
+          </FadeUp>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 items-center justify-items-center">
+            {/* Logo BMW */}
+            <FadeUp delay={0.05}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={bmwLogo}
+                  alt="BMW"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo Chino en Moto */}
+            <FadeUp delay={0.08}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={chinoLogo}
+                  alt="Chino en Moto"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo BMW AM */}
+            <FadeUp delay={0.11}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={logo}
+                  alt="BMW AM"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo Ixmiquilpan */}
+            <FadeUp delay={0.14}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={ixmiquilpanLogo}
+                  alt="Ixmiquilpan"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo BMW 1 */}
+            <FadeUp delay={0.17}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={bmw1}
+                  alt="BMW 1"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg rounded-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo BMW 2 */}
+            <FadeUp delay={0.2}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={bmw2}
+                  alt="BMW 2"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg rounded-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo Gobierno */}
+            <FadeUp delay={0.23}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={gobiernoLogo}
+                  alt="Gobierno"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo BMW Motorrad */}
+            <FadeUp delay={0.26}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={bmwMotoradLogo}
+                  alt="BMW Motorrad"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg rounded-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo BMW AM Amigos */}
+            <FadeUp delay={0.29}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={bmwAmAmigosLogo}
+                  alt="BMW AM Amigos"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg rounded-lg"
+                />
+              </motion.div>
+            </FadeUp>
+
+            {/* Logo Palmas Hotel & Spa */}
+            <FadeUp delay={0.32}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                viewport={{ once: true }}
+                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
+              >
+                <img
+                  src={palmasLogo}
+                  alt="Palmas Hotel & Spa"
+                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
+                />
+              </motion.div>
+            </FadeUp>
+          </div>
+
+          {/* Decorative elements */}
+          <div className="mt-12 pt-12 border-t border-white/[0.06]">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <p className="text-gray-500 text-sm leading-relaxed font-light">
+                En colaboración con los principales protagonistas del motociclismo en México
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
           IMAGEN BMW IXMIQUILPAN
       ══════════════════════════════════════════════════════ */}
       <section className="py-14 md:py-20 px-4 sm:px-6 bg-[#080810]">
@@ -692,209 +895,6 @@ export default function Home() {
               Comunícate con nosotros para resolver cualquier duda sobre el evento
             </p>
           </FadeUp>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════
-          LOGOS PARTNERS
-      ══════════════════════════════════════════════════════ */}
-      <section className="py-20 md:py-28 px-4 sm:px-6 bg-[#050505] border-y border-white/[0.06]">
-        <div className="max-w-6xl mx-auto">
-          <FadeUp className="text-center mb-16">
-            <span className="text-[#0066CC] text-xs font-semibold tracking-[0.45em] uppercase block mb-4">
-              Nuestros Aliados
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
-              Organizadores y Partners Oficiales
-            </h2>
-          </FadeUp>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 items-center justify-items-center">
-            {/* Logo BMW */}
-            <FadeUp delay={0.05}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={bmwLogo}
-                  alt="BMW"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo Chino en Moto */}
-            <FadeUp delay={0.08}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={chinoLogo}
-                  alt="Chino en Moto"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo BMW AM */}
-            <FadeUp delay={0.11}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={logo}
-                  alt="BMW AM"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo Ixmiquilpan */}
-            <FadeUp delay={0.14}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={ixmiquilpanLogo}
-                  alt="Ixmiquilpan"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo BMW 1 */}
-            <FadeUp delay={0.17}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={bmw1}
-                  alt="BMW 1"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg rounded-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo BMW 2 */}
-            <FadeUp delay={0.2}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={bmw2}
-                  alt="BMW 2"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg rounded-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo Gobierno */}
-            <FadeUp delay={0.23}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={gobiernoLogo}
-                  alt="Gobierno"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo BMW Motorrad */}
-            <FadeUp delay={0.26}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={bmwMotoradLogo}
-                  alt="BMW Motorrad"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg rounded-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo BMW AM Amigos */}
-            <FadeUp delay={0.29}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={bmwAmAmigosLogo}
-                  alt="BMW AM Amigos"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg rounded-lg"
-                />
-              </motion.div>
-            </FadeUp>
-
-            {/* Logo Palmas Hotel & Spa */}
-            <FadeUp delay={0.32}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true }}
-                className="flex items-center justify-center p-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] hover:border-[#0066CC]/40 transition-all duration-300 hover:bg-white/[0.05] w-full h-40"
-              >
-                <img
-                  src={palmasLogo}
-                  alt="Palmas Hotel & Spa"
-                  className="max-w-[120px] max-h-[120px] object-contain filter drop-shadow-lg"
-                />
-              </motion.div>
-            </FadeUp>
-          </div>
-
-          {/* Decorative elements */}
-          <div className="mt-12 pt-12 border-t border-white/[0.06]">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <p className="text-gray-500 text-sm leading-relaxed font-light">
-                En colaboración con los principales protagonistas del motociclismo en México
-              </p>
-            </motion.div>
-          </div>
         </div>
       </section>
 
