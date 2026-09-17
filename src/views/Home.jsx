@@ -56,7 +56,7 @@ function FadeUp({ children, delay = 0, className = '' }) {
 /* ─── Data ──────────────────────────────────────────────────────── */
 const STATS = [
   { value: 2, suffix: '', label: 'Rutas Diseñadas' },
-  { value: 300, suffix: '+', label: 'Cupos Disponibles' },
+  { value: 300, suffix: '', label: 'Cupos Disponibles' },
   { value: 120, suffix: ' km', label: 'Por dia' },
 ];
 
@@ -154,26 +154,14 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap"
+            className="flex justify-center items-center"
           >
             <Link
               to="/formulario"
               className="px-8 py-4 bg-[#0066CC] hover:bg-[#0052a3] text-white font-semibold rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(0,102,204,0.5)] text-sm tracking-wide"
             >
-              Reservar mi Lugar
+              Registrar mi participación
             </Link>
-            <a
-              href="#evento"
-              className="px-8 py-4 border border-white/20 hover:border-white/60 text-white font-medium rounded-full transition-all duration-300 hover:bg-white/[0.06] backdrop-blur-sm text-sm tracking-wide"
-            >
-              Conocer el Evento
-            </a>
-            <a
-              href="#hotel"
-              className="px-8 py-4 border border-white/20 hover:border-white/60 text-white font-medium rounded-full transition-all duration-300 hover:bg-white/[0.06] backdrop-blur-sm text-sm tracking-wide"
-            >
-              Reserva tu Hotel
-            </a>
           </motion.div>
 
           {/* Logos debajo de los botones */}
@@ -239,20 +227,34 @@ export default function Home() {
               Sobre el Evento
             </span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-5 md:mb-7 leading-[1.1] tracking-tight">
-              Una experiencia{' '}
+              15 años uniendo a la comunidad BMW en el corazón de{' '}
               <span className="bg-gradient-to-r from-[#0066CC] to-[#1a8fff] bg-clip-text text-transparent">
-                única en Hidalgo
+                Hidalgo
               </span>
             </h2>
-            <p className="text-gray-400 text-base leading-relaxed mb-5 font-light">
-La XV Convención Internacional de Amigos Motociclistas BMW llega a Ixmiquilpan para reunir a los verdaderos apasionados de las dos ruedas en un escenario inigualable.
-
-Prepárate para recorrer rutas diseñadas por expertos a través del majestuoso Valle del Mezquital, donde la adrenalina del motociclismo se fusiona con algunos de los paisajes más impresionantes del centro de México. Vive la experiencia completa: disfruta su reconocida gastronomía, relájate en sus aguas termales y déjate envolver por la calidez de su gente.
-
-Reserva tu lugar y sé parte de este encuentro único, donde la pasión por rodar nos une y cada kilómetro se convierte en una historia por contar.            </p>
-            <p className="text-gray-400 text-base leading-relaxed font-light">
-              Reserva tu lugar antes de que se agoten los cupos.
+            <p className="text-gray-400 text-base leading-relaxed mb-4 font-light">
+              Cientos de motociclistas de todo México se dan cita cada año en este evento. Esta es la edición XV.
             </p>
+            <p className="text-gray-400 text-base leading-relaxed mb-6 font-light">
+              Del 26 al 29 de noviembre vive 4 días de convención respaldados por 15 ediciones de experiencia organizando el evento BMW más grande de la región:
+            </p>
+            <div className="space-y-3">
+              {[
+                '2 rutas diseñadas y guiadas por expertos — hasta 120 km diarios por el Valle del Mezquital, sin improvisar el camino',
+                'Hospedaje en Palmas Hotel & Spa con acceso incluido al Parque Acuático El Tephé',
+                'Todo incluido en tu inscripción: kit de bienvenida, cóctel, cena rompehielo, verbena popular y cena de clausura',
+                'Evento avalado por BMW Motorrad México, BMW Clubs International Council y BMW MOA',
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-[#0066CC]/20 border border-[#0066CC]/40 flex items-center justify-center">
+                    <svg className="w-3 h-3 text-[#0066CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </span>
+                  <p className="text-gray-300 text-sm leading-relaxed">{item}</p>
+                </div>
+              ))}
+            </div>
             <div className="mt-8 flex items-center gap-6">
               <Link
                 to="/formulario"
