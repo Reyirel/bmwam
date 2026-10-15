@@ -356,7 +356,9 @@ export default function Formulario() {
     const saved = loadFromStorage();
     if (saved) {
       if (saved.form) setForm(saved.form);
-      if (saved.participantes) setParticipantes(saved.participantes);
+      if (saved.participantes) {
+        setParticipantes(saved.participantes.map((p) => ({ _id: p._id || crypto.randomUUID(), ...p })));
+      }
       // Solo restaurar paso 2 si todos los campos requeridos están llenos
       if (saved.step === 2) {
         const todoLleno = REQUIRED_FIELDS.every(f => saved.form?.[f]?.trim());
@@ -393,7 +395,7 @@ export default function Formulario() {
 
   /* ─── Handlers participantes adicionales ─── */
   const addParticipante = () => {
-    setParticipantes((p) => [...p, { ...EMPTY_PARTICIPANTE }]);
+    setParticipantes((p) => [...p, { ...EMPTY_PARTICIPANTE, _id: crypto.randomUUID() }]);
     setParticipanteErrors((p) => [...p, {}]);
   };
 
@@ -630,7 +632,7 @@ export default function Formulario() {
               <AnimatePresence>
                 {participantes.map((p, idx) => (
                   <motion.div
-                    key={idx}
+                    key={p._id}
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -16 }}
@@ -718,7 +720,7 @@ export default function Formulario() {
 
                   {/* Additional participants */}
                   {participantes.map((p, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-sm gap-4">
+                    <div key={p._id} className="flex justify-between items-center text-sm gap-4">
                       <div>
                         <span className="text-gray-300 font-medium">{p.nombre || `Participante ${idx + 2}`}</span>
                         <span className={`ml-2 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${

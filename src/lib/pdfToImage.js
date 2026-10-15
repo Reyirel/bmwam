@@ -28,7 +28,12 @@ export async function convertPdfToJpg(pdfFile, scale = 2, quality = 0.85) {
   const context = canvas.getContext('2d');
   canvas.width = viewport.width;
   canvas.height = viewport.height;
-  
+
+  // Fondo blanco: el canvas es transparente por defecto y, al exportar a JPEG
+  // (sin canal alfa), las zonas transparentes del PDF se verían negras.
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
   // Renderizar la página en el canvas
   await page.render({
     canvasContext: context,
