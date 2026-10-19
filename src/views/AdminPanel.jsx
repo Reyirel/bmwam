@@ -28,6 +28,65 @@ function formatFecha(iso) {
   });
 }
 
+/* ─── Exportar a Excel (CSV) ──────────────────────────────────── */
+const CSV_HEADERS = [
+  'Código', 'Rifa', 'Estado', 'Fecha', 'Tipo participante', 'Nombre', 'Email',
+  'Teléfono', 'Ciudad', 'Moto', 'Es Socio', 'Género Jersey', 'Talla Jersey',
+  'Nombre Jersey', 'Talla Pulsera', 'Precio', 'Total Pago (registro)',
+  'Contacto Emergencia', 'Teléfono Emergencia', 'Notas',
+];
+
+function csvEscape(value) {
+  const str = value === null || value === undefined ? '' : String(value);
+  if (/[",\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function registroACsvFilas(r) {
+  const base = {
+    codigo: r.codigo,
+    rifa: r.numero_rifa || r.rifa_id || '',
+    estado: ESTADO_CONFIG[r.estado]?.label ?? r.estado,
+    fecha: r.created_at ? formatFecha(r.created_at) : '',
+    totalPago: r.total_pago ?? '',
+    emergenciaNombre: r.emergencia_nombre ?? '',
+    emergenciaTelefono: r.emergencia_telefono ?? '',
+    notas: r.notas ?? '',
+  };
+
+  const participantes = [
+    { tipo: 'Principal', nombre: r.nombre, email: r.email, telefono: r.telefono, procedencia: r.procedencia, moto: r.moto, es_socio: r.es_socio, genero_jersey: r.genero_jersey, talla_jersey: r.talla_jersey, nombre_jersey: r.nombre_jersey, talla_pulsera: r.talla_pulsera, precio: r.precio },
+    ...(r.participantes_extra ?? []).map((p, idx) => ({ tipo: `Acompañante ${idx + 1}`, ...p })),
+  ];
+
+  return participantes.map((p) => [
+    base.codigo, base.rifa, base.estado, base.fecha, p.tipo, p.nombre ?? '', p.email ?? '',
+    p.telefono ?? '', p.procedencia ?? '', p.moto ?? '', p.es_socio ? 'Sí' : 'No',
+    p.genero_jersey ?? '', p.talla_jersey ?? '', p.nombre_jersey ?? '', p.talla_pulsera ?? '',
+    p.precio ?? '', base.totalPago, base.emergenciaNombre, base.emergenciaTelefono, base.notas,
+  ]);
+}
+
+function exportarRegistrosExcel(registros) {
+  const filas = registros.flatMap(registroACsvFilas);
+  const contenido = [CSV_HEADERS, ...filas]
+    .map((fila) => fila.map(csvEscape).join(','))
+    .join('\r\n');
+
+  const blob = new Blob(['﻿' + contenido], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  const fecha = new Date().toISOString().slice(0, 10);
+  link.href = url;
+  link.download = `registros-bmwam-${fecha}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 function EstadoBadge({ estado }) {
   const cfg = ESTADO_CONFIG[estado] ?? ESTADO_CONFIG.pendiente;
   return (
@@ -428,6 +487,14 @@ export default function AdminPanel() {
                   <p className="text-gray-500 text-sm mt-1">Gran Competencia BMWAM 2026 · Ixmiquilpan, Hidalgo</p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
+                  <button onClick={() => exportarRegistrosExcel(filtrados)}
+                    disabled={loading || filtrados.length === 0}
+                    className="flex items-center gap-2 px-4 py-2.5 border border-emerald-500/30 hover:border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/15 rounded-xl text-emerald-400 text-sm font-medium transition-all duration-200 disabled:opacity-40">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Exportar a Excel
+                  </button>
                   <button onClick={fetchRegistros}
                     className="flex items-center gap-2 px-4 py-2.5 border border-white/10 hover:border-white/25 rounded-xl text-gray-400 hover:text-white text-sm transition-all duration-200">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
